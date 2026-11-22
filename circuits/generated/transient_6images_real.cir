@@ -1,6 +1,6 @@
 * NeuralSphere-V1 differential resistive crossbar: 64 inputs + bias -> 10 outputs
 * amplifier model: OPA_REAL
-.include "/home/claude/NS/circuits/models/neuralsphere_models.lib"
+.include "C:/Users/intel/Documents/NeuralSphere-V1/circuits/models/neuralsphere_models.lib"
 * ---- supplies and reference rail
 VCC vcc 0 DC 5
 VEE vee 0 DC -5
@@ -1466,7 +1466,7 @@ XD9 dp9 dm9 s9 vcc vee OPA_REAL params: VOS=0
 set wr_singlescale
 option numdgt=8
 tran 20n 0.00012 0 20n
-wrdata /home/claude/NS/results/s07_transient.txt v(s0) v(s1) v(s2) v(s3) v(s4) v(s5) v(s6) v(s7) v(s8) v(s9) i(VCC) i(VEE) i(VB) i(VIN0) i(VIN1) i(VIN2) i(VIN3) i(VIN4) i(VIN5) i(VIN6) i(VIN7) i(VIN8) i(VIN9) i(VIN10) i(VIN11) i(VIN12) i(VIN13) i(VIN14) i(VIN15) i(VIN16) i(VIN17) i(VIN18) i(VIN19) i(VIN20) i(VIN21) i(VIN22) i(VIN23) i(VIN24) i(VIN25) i(VIN26) i(VIN27) i(VIN28) i(VIN29) i(VIN30) i(VIN31) i(VIN32) i(VIN33) i(VIN34) i(VIN35) i(VIN36) i(VIN37) i(VIN38) i(VIN39) i(VIN40) i(VIN41) i(VIN42) i(VIN43) i(VIN44) i(VIN45) i(VIN46) i(VIN47) i(VIN48) i(VIN49) i(VIN50) i(VIN51) i(VIN52) i(VIN53) i(VIN54) i(VIN55) i(VIN56) i(VIN57) i(VIN58) i(VIN59) i(VIN60) i(VIN61) i(VIN62) i(VIN63) v(in0) v(in1) v(in2) v(in3) v(in4) v(in5) v(in6) v(in7) v(in8) v(in9) v(in10) v(in11) v(in12) v(in13) v(in14) v(in15) v(in16) v(in17) v(in18) v(in19) v(in20) v(in21) v(in22) v(in23) v(in24) v(in25) v(in26) v(in27) v(in28) v(in29) v(in30) v(in31) v(in32) v(in33) v(in34) v(in35) v(in36) v(in37) v(in38) v(in39) v(in40) v(in41) v(in42) v(in43) v(in44) v(in45) v(in46) v(in47) v(in48) v(in49) v(in50) v(in51) v(in52) v(in53) v(in54) v(in55) v(in56) v(in57) v(in58) v(in59) v(in60) v(in61) v(in62) v(in63)
+wrdata C:/Users/intel/Documents/NeuralSphere-V1/results/s07_transient.txt v(s0) v(s1) v(s2) v(s3) v(s4) v(s5) v(s6) v(s7) v(s8) v(s9) i(VCC) i(VEE) i(VB) i(VIN0) i(VIN1) i(VIN2) i(VIN3) i(VIN4) i(VIN5) i(VIN6) i(VIN7) i(VIN8) i(VIN9) i(VIN10) i(VIN11) i(VIN12) i(VIN13) i(VIN14) i(VIN15) i(VIN16) i(VIN17) i(VIN18) i(VIN19) i(VIN20) i(VIN21) i(VIN22) i(VIN23) i(VIN24) i(VIN25) i(VIN26) i(VIN27) i(VIN28) i(VIN29) i(VIN30) i(VIN31) i(VIN32) i(VIN33) i(VIN34) i(VIN35) i(VIN36) i(VIN37) i(VIN38) i(VIN39) i(VIN40) i(VIN41) i(VIN42) i(VIN43) i(VIN44) i(VIN45) i(VIN46) i(VIN47) i(VIN48) i(VIN49) i(VIN50) i(VIN51) i(VIN52) i(VIN53) i(VIN54) i(VIN55) i(VIN56) i(VIN57) i(VIN58) i(VIN59) i(VIN60) i(VIN61) i(VIN62) i(VIN63) v(in0) v(in1) v(in2) v(in3) v(in4) v(in5) v(in6) v(in7) v(in8) v(in9) v(in10) v(in11) v(in12) v(in13) v(in14) v(in15) v(in16) v(in17) v(in18) v(in19) v(in20) v(in21) v(in22) v(in23) v(in24) v(in25) v(in26) v(in27) v(in28) v(in29) v(in30) v(in31) v(in32) v(in33) v(in34) v(in35) v(in36) v(in37) v(in38) v(in39) v(in40) v(in41) v(in42) v(in43) v(in44) v(in45) v(in46) v(in47) v(in48) v(in49) v(in50) v(in51) v(in52) v(in53) v(in54) v(in55) v(in56) v(in57) v(in58) v(in59) v(in60) v(in61) v(in62) v(in63)
 quit
 .endc
 .end

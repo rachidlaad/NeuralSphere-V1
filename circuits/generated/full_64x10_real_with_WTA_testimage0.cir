@@ -1,6 +1,6 @@
 * NeuralSphere-V1 differential resistive crossbar: 64 inputs + bias -> 10 outputs
 * amplifier model: OPA_REAL
-.include "/home/claude/NS/circuits/models/neuralsphere_models.lib"
+.include "C:/Users/intel/Documents/NeuralSphere-V1/circuits/models/neuralsphere_models.lib"
 * ---- supplies and reference rail
 VCC vcc 0 DC 5
 VEE vee 0 DC -5
@@ -1613,7 +1613,7 @@ set noaskquit
 set wr_singlescale
 set appendwrite
 option numdgt=10
-shell rm -f single_image_output.txt
+
 alter VIN0 dc = 0
 alter VIN1 dc = 0
 alter VIN2 dc = 0.5

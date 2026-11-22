@@ -1,0 +1,77 @@
+﻿Using ngspice: C:\Users\intel\Documents\NeuralSphere-V1\tools\qucs-s\bin\ngspice_con.exe
+
+===== s00_validate_ngspice.py =====
+{'stamp': {'time': '2026-11-21 18:22:20', 'host': 'DESKTOP-8DACNP1', 'platform': 'Windows-11-10.0.22631-SP0', 'python': '3.12.10', 'ngspice': 'C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe', 'ngspice_version': '** ngspice-46 : Circuit level simulation program'}, 'v_mid_spice': 1.598639, 'v_mid_hand': 1.598639455782313, 'i_source_spice': -0.000340136, 'i_hand': 0.0003401360544217687, 'abs_err_V': 4.5578231300247296e-07, 'note': 'ngspice reports i(V1) flowing into the + terminal, hence the negative sign', 'passed': True}
+
+===== s01_stageA_single_neuron.py =====
+{'input': 0, 'V': np.float64(1.0), 'w': np.float64(1.0), 'Rp': np.float64(19801.9802), 'Rn': np.float64(1000000.0), 'Ip_uA': np.float64(50.5), 'In_uA': np.float64(1.0)}
+{'input': 1, 'V': np.float64(0.5), 'w': np.float64(-0.5), 'Rp': np.float64(1000000.0), 'Rn': np.float64(38834.9515), 'Ip_uA': np.float64(0.5), 'In_uA': np.float64(12.875)}
+{'input': 2, 'V': np.float64(0.25), 'w': np.float64(0.25), 'Rp': np.float64(74766.3551), 'Rn': np.float64(1000000.0), 'Ip_uA': np.float64(3.3438), 'In_uA': np.float64(0.25)}
+{'input': 3, 'V': np.float64(1.0), 'w': np.float64(-2.0), 'Rp': np.float64(1000000.0), 'Rn': np.float64(10000.0), 'Ip_uA': np.float64(1.0), 'In_uA': np.float64(100.0)}
+{'input': 4, 'V': np.float64(1.0), 'w': np.float64(0.3), 'Rp': np.float64(63091.4826), 'Rn': np.float64(1000000.0), 'Ip_uA': np.float64(15.85), 'In_uA': np.float64(1.0)}
+I+ = 71.1938 uA, I- = 115.1250 uA, z = -0.8875, S_hand = -0.439312 V
+SPICE ideal: {'v(s0)': -0.43931, 'v(tp0)': -0.711936, 'v(tn0)': -1.15125, 'v(cp0)': 7.119362e-07, 'v(cn0)': 1.151247e-06, 'i(vcc)': 0.0, 'i(vee)': 0.0, 'i(vin0)': -5.15e-05, 'i(vin1)': -1.3375e-05, 'i(vin2)': -3.59374e-06, 'i(vin3)': -0.000101, 'i(vb)': -1.685e-05}
+SPICE real : {'v(s0)': -0.43929, 'v(tp0)': -0.711924, 'v(tn0)': -1.15122, 'v(cp0)': 7.209246e-06, 'v(cn0)': 1.180506e-05, 'i(vcc)': -0.00150136, 'i(vee)': 0.001693436, 'i(vin0)': -5.14996e-05, 'i(vin1)': -1.33747e-05, 'i(vin2)': -3.59364e-06, 'i(vin3)': -0.000100999, 'i(vb)': -1.68499e-05}
+
+===== s02_train_software.py =====
+sklearn baseline test: 344 / 360
+softmax-SGD test: 348 / 360
+
+===== s03_stageBC_build_verify.py =====
+alpha = 42.3944 uS/unit, Rf = 5600 ohm, volts/logit = 0.2374 V
+{'stamp': {'time': '2026-11-21 18:23:34', 'host': 'DESKTOP-8DACNP1', 'platform': 'Windows-11-10.0.22631-SP0', 'python': '3.12.10', 'ngspice': 'C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe', 'ngspice_version': '** ngspice-46 : Circuit level simulation program'}, 'Rf': 5600.0, 'alpha': 4.2394417180493934e-05, 'volts_per_logit': 0.23740873621076602, 'n_resistors_synapse': 1300, 'n_opamps': 30, 'max_rel_err_R_vs_1_over_G': np.float64(4.919932017344308e-09), 'max_abs_err_spice_vs_kcl_V': 1.636246596925517e-05, 'max_abs_err_spice_vs_software_V': 1.636246596836699e-05, 'max_abs_err_in_logits': 6.892107775613096e-05, 'prediction_disagreements_spice_vs_software': 0, 'tia_output_range_V': [-3.1939953341, -0.17067825218], 'score_range_V': [-1.9377187907, 2.2647034983], 'kcl_audit': {'sum_I_plus_branches_A': 0.00019737561691293077, 'I_through_Rf_A': 0.00019737482648214284, 'tp0_spice_V': -1.1052990283, 'tp0_hand_V': -1.1053034547124123}}
+ideal-amp SPICE test acc: 348 / 360
+
+===== s04_stageD_inference.py =====
+D1_real_continuous test 348 / 360, train 1410 / 1437, disagree 0 P_mean 0.18301433674706186
+D2_real_8bit test 348 / 360, train 1410 / 1437, disagree 0 P_mean 0.1830189780164508
+
+===== s07_transient_energy.py =====
+0 5 5 E=3.576 uJ settle=0.00 us decide=0.00 us
+1 2 2 E=3.705 uJ settle=5.07 us decide=1.49 us
+2 8 8 E=3.644 uJ settle=4.33 us decide=0.93 us
+3 1 6 E=3.621 uJ settle=4.13 us decide=4.01 us
+4 7 7 E=3.550 uJ settle=4.25 us decide=0.65 us
+5 2 2 E=3.724 uJ settle=4.71 us decide=1.35 us
+
+===== s08_wta.py =====
+{'stamp': {'time': '2026-11-21 18:29:28', 'host': 'DESKTOP-8DACNP1', 'platform': 'Windows-11-10.0.22631-SP0', 'python': '3.12.10', 'ngspice': 'C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe', 'ngspice_version': '** ngspice-46 : Circuit level simulation program'}, 'n_comparators': 45, 'n_diodes': 90, 'ambiguous': 0, 'wta_vs_argmax_disagreements': 0, 'winner_line_V': {'min': 4.99999713, 'mean': 4.999999990420277}, 'loser_line_V': {'max': 0.449292207, 'mean': 0.38193177925848765}, 'min_top2_gap_V': 0.00456765068999998, 'median_top2_gap_V': 0.87592519245, 'mean_total_power_W': 0.27509246744703375} 348
+
+===== s10_qucs_schematic.py =====
+* netlist extracted from neuron_stageA.sch geometry
+* OpAmp = Qucs ideal op-amp (gain 1e6, output limited to +/-5 V)
+.subckt QOPAMP inp inn out
+B1 out 0 V = 5*tanh(1e6*(v(inp)-v(inn))/5)
+.ends
+VIN0 in0 0 DC 1.0
+RP0 in0 cp 19802
+RN0 in0 cn 1000000
+VIN1 in1 0 DC 0.5
+RP1 in1 cp 1000000
+RN1 in1 cn 38835
+VIN2 in2 0 DC 0.25
+
+Note: No compatibility mode selected!
+
+
+Circuit: * netlist extracted from neuron_stagea.sch geometry
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v(s) = -4.39311e-01
+v(tp) = -7.11936e-01
+v(tn) = -1.15125e+00
+v(cp) = 7.168056e-07
+v(cn) = 1.172244e-06
+ngspice-46 done
+
+S from schematic geometry = -0.439311 V ; Stage A hand value = -0.439312 V
+
+===== s09_figures.py =====
+figures written to C:\Users\intel\Documents\NeuralSphere-V1\plots
+
+Done. Results in .\results, figures in .\plots. Start the demo with:  .\.venv\Scripts\python.exe demo\demo_app.py
+SUCCESS=True  elapsed=00:07:20.3603486

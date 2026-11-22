@@ -1,0 +1,60 @@
+{
+ "stamp": {
+  "time": "2026-11-21 18:31:09",
+  "host": "DESKTOP-8DACNP1",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.10",
+  "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
+  "ngspice_version": "** ngspice-46 : Circuit level simulation program"
+ },
+ "qucs_s": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\qucs-s.exe",
+ "qucs_version": "* Qucs 26.1.1  C:/Users/intel/AppData/Local/Temp/ns_qucs_7yad30mc/neuron_stageA.sch",
+ "components_in_qucs_netlist": {
+  "resistors": 16,
+  "voltage_sources": 5,
+  "opamps": 3
+ },
+ "opamp_pins_from_qucs_netlist": {
+  "OPP": {
+   "out": "tp",
+   "non_inverting": "0",
+   "inverting": "_net0"
+  },
+  "OPN": {
+   "out": "tn",
+   "non_inverting": "0",
+   "inverting": "_net1"
+  },
+  "OPD": {
+   "out": "S",
+   "non_inverting": "_net3",
+   "inverting": "_net2"
+  }
+ },
+ "inverting_TIAs_and_diffamp_output_ok": true,
+ "node_voltages": {
+  "v(tp)": {
+   "qucs_ngspice": -0.711936,
+   "hand": -0.7119375000000001,
+   "abs_err": 1.5000000000986446e-06
+  },
+  "v(tn)": {
+   "qucs_ngspice": -1.15125,
+   "hand": -1.15125,
+   "abs_err": 0.0
+  },
+  "v(s)": {
+   "qucs_ngspice": -0.439311,
+   "hand": -0.4393125,
+   "abs_err": 1.4999999999876223e-06
+  }
+ },
+ "formulas": {
+  "tp": "-Rf*I+ = -10000 ohm * 71.1938 uA = -0.711938 V",
+  "tn": "-Rf*I- = -10000 ohm * 115.1250 uA = -1.151250 V",
+  "S": "Rf*(I+ - I-) = 10000 ohm * (71.1938 - 115.1250) uA = -0.439312 V"
+ },
+ "note": "Resistor values in the .sch are written with 6 significant digits, so ~1e-6 V deviations are expected.",
+ "ok": true,
+ "render_png": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\plots\\fig10_qucs_schematic.png"
+}

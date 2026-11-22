@@ -1,6 +1,6 @@
 * NeuralSphere-V1 differential resistive crossbar: 4 inputs + bias -> 1 outputs
 * amplifier model: OPA_REAL
-.include "/home/claude/NS/circuits/models/neuralsphere_models.lib"
+.include "C:/Users/intel/Documents/NeuralSphere-V1/circuits/models/neuralsphere_models.lib"
 * ---- supplies and reference rail
 VCC vcc 0 DC 5
 VEE vee 0 DC -5

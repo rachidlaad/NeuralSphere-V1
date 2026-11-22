@@ -1,11 +1,11 @@
 {
  "stamp": {
-  "time": "2026-11-21 16:32:38",
-  "host": "vm",
-  "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
-  "python": "3.13.18",
-  "ngspice": "/home/claude/ngspice/bin/ngspice",
-  "ngspice_version": "** ngspice-47 : Circuit level simulation program"
+  "time": "2026-11-21 18:29:28",
+  "host": "DESKTOP-8DACNP1",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.10",
+  "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
+  "ngspice_version": "** ngspice-46 : Circuit level simulation program"
  },
  "n_comparators": 45,
  "n_diodes": 90,
@@ -152,12 +152,12 @@
  "ambiguous": 0,
  "wta_vs_argmax_disagreements": 0,
  "winner_line_V": {
-  "min": 4.9999971312,
-  "mean": 4.999999990430833
+  "min": 4.99999713,
+  "mean": 4.999999990420277
  },
  "loser_line_V": {
-  "max": 0.44929220701,
-  "mean": 0.381931779258355
+  "max": 0.449292207,
+  "mean": 0.38193177925848765
  },
  "min_top2_gap_V": 0.00456765068999998,
  "median_top2_gap_V": 0.87592519245,

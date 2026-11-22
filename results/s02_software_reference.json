@@ -1,11 +1,11 @@
 {
  "stamp": {
-  "time": "2026-11-21 15:33:32",
-  "host": "vm",
-  "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
-  "python": "3.13.18",
-  "ngspice": "/home/claude/ngspice/bin/ngspice",
-  "ngspice_version": "** ngspice-47 : Circuit level simulation program"
+  "time": "2026-11-21 18:22:30",
+  "host": "DESKTOP-8DACNP1",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.10",
+  "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
+  "ngspice_version": "** ngspice-46 : Circuit level simulation program"
  },
  "sklearn_logreg_C1": {
   "train": {
@@ -580,5 +580,5 @@
   "seed": 0
  },
  "max_abs_w": 2.3352131385250137,
- "max_abs_b": 1.6112330847818799
+ "max_abs_b": 1.6112330847818788
 }

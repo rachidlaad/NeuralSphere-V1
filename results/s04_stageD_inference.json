@@ -1,11 +1,11 @@
 {
  "stamp": {
-  "time": "2026-11-21 15:34:37",
-  "host": "vm",
-  "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
-  "python": "3.13.18",
-  "ngspice": "/home/claude/ngspice/bin/ngspice",
-  "ngspice_version": "** ngspice-47 : Circuit level simulation program"
+  "time": "2026-11-21 18:23:38",
+  "host": "DESKTOP-8DACNP1",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.10",
+  "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
+  "ngspice_version": "** ngspice-46 : Circuit level simulation program"
  },
  "opamp_model": "OPA_REAL AOL=1e5 GBW=1MHz HR=0.2V IQ=0.5mA ROUT=50ohm VOS=0",
  "label": "externally trained, circuit-executed inference",
@@ -294,15 +294,15 @@
    ]
   },
   "disagreements_vs_software": 0,
-  "max_abs_logit_err": 0.0008262500176883236,
+  "max_abs_logit_err": 0.0008262500176847709,
   "power_W": {
    "p_vcc": {
-    "mean": 0.07538927489433332,
+    "mean": 0.07538927489430555,
     "min": 0.075267860105,
     "max": 0.07550847544
    },
    "p_vee": {
-    "mean": 0.10329303254988888,
+    "mean": 0.10329303254990278,
     "min": 0.0930644824,
     "max": 0.112336971635
    },
@@ -317,14 +317,14 @@
     "max": 0.006094696704377062
    },
    "p_total": {
-    "mean": 0.1830143367470757,
+    "mean": 0.18301433674706186,
     "min": 0.1710534190989657,
     "max": 0.19391809320796283
    }
   },
   "supply_current_A": {
-   "i_vcc_mean": 0.015077854978866665,
-   "i_vee_mean": 0.020658606509977778
+   "i_vcc_mean": 0.015077854978861112,
+   "i_vee_mean": 0.020658606509980557
   },
   "input_current_total_A_mean": 0.005224497785346072
  },
@@ -613,10 +613,10 @@
    ]
   },
   "disagreements_vs_software": 0,
-  "max_abs_logit_err": 0.023129379460730348,
+  "max_abs_logit_err": 0.023129379460733013,
   "power_W": {
    "p_vcc": {
-    "mean": 0.07538944312173611,
+    "mean": 0.0753894431216389,
     "min": 0.07526808705,
     "max": 0.075508687905
    },
@@ -636,13 +636,13 @@
     "max": 0.006095992954916999
    },
    "p_total": {
-    "mean": 0.18301897801654804,
+    "mean": 0.1830189780164508,
     "min": 0.17105121355367794,
     "max": 0.19392465728859806
    }
   },
   "supply_current_A": {
-   "i_vcc_mean": 0.015077888624347223,
+   "i_vcc_mean": 0.015077888624327778,
    "i_vee_mean": 0.020659388873397223
   },
   "input_current_total_A_mean": 0.005225498514194904

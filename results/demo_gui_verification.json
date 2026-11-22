@@ -1,0 +1,198 @@
+{
+ "stamp": {
+  "time": "2026-11-21 18:29:15",
+  "host": "DESKTOP-8DACNP1",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.10",
+  "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
+  "ngspice_version": "** ngspice-46 : Circuit level simulation program"
+ },
+ "demos": [
+  {
+   "demo": "demo_app",
+   "ok": true,
+   "screenshot": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\plots\\demo_gui_demo_app.png",
+   "runs": [
+    {
+     "image": 0,
+     "true": 5,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      0.16896,
+      -0.855907,
+      -0.802563,
+      -0.010828,
+      -0.341765,
+      1.337301,
+      -0.149408,
+      -0.626375,
+      0.344705,
+      0.935887
+     ],
+     "predicted_argmax": 5,
+     "n_output_voltages": 10
+    },
+    {
+     "image": 17,
+     "true": 4,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      -0.071636,
+      0.153218,
+      -1.061174,
+      -1.133276,
+      1.646095,
+      -0.122486,
+      0.557318,
+      0.05118,
+      0.356168,
+      -0.375414
+     ],
+     "predicted_argmax": 4,
+     "n_output_voltages": 10
+    },
+    {
+     "image": 123,
+     "true": 5,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      0.045953,
+      -1.028735,
+      -0.58116,
+      0.615223,
+      -0.567971,
+      1.343793,
+      0.216638,
+      -0.43994,
+      0.5106,
+      -0.114399
+     ],
+     "predicted_argmax": 5,
+     "n_output_voltages": 10
+    },
+    {
+     "image": 359,
+     "true": 4,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      0.126521,
+      0.412792,
+      -0.892034,
+      -1.197453,
+      1.938389,
+      -0.093808,
+      0.555205,
+      0.215136,
+      0.074266,
+      -1.139028
+     ],
+     "predicted_argmax": 4,
+     "n_output_voltages": 10
+    }
+   ]
+  },
+  {
+   "demo": "neuralsphere_visual",
+   "ok": true,
+   "screenshot": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\plots\\demo_gui_neuralsphere_visual.png",
+   "runs": [
+    {
+     "image": 0,
+     "true": 5,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run_visual\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      0.16896,
+      -0.855907,
+      -0.802563,
+      -0.010828,
+      -0.341765,
+      1.337301,
+      -0.149408,
+      -0.626375,
+      0.344705,
+      0.935887
+     ],
+     "predicted_argmax": 5,
+     "n_output_voltages": 10
+    },
+    {
+     "image": 17,
+     "true": 4,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run_visual\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      -0.071636,
+      0.153218,
+      -1.061174,
+      -1.133276,
+      1.646095,
+      -0.122486,
+      0.557318,
+      0.05118,
+      0.356168,
+      -0.375414
+     ],
+     "predicted_argmax": 4,
+     "n_output_voltages": 10
+    },
+    {
+     "image": 123,
+     "true": 5,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run_visual\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      0.045953,
+      -1.028735,
+      -0.58116,
+      0.615223,
+      -0.567971,
+      1.343793,
+      0.216638,
+      -0.43994,
+      0.5106,
+      -0.114399
+     ],
+     "predicted_argmax": 5,
+     "n_output_voltages": 10
+    },
+    {
+     "image": 359,
+     "true": 4,
+     "ngspice_processes_started": 1,
+     "output_file": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\demo\\last_run_visual\\out_0.txt",
+     "output_written_after_click": true,
+     "S_volts_from_raw_file": [
+      0.126521,
+      0.412792,
+      -0.892034,
+      -1.197453,
+      1.938389,
+      -0.093808,
+      0.555205,
+      0.215136,
+      0.074266,
+      -1.139028
+     ],
+     "predicted_argmax": 4,
+     "n_output_voltages": 10
+    }
+   ]
+  }
+ ],
+ "ngspice_exe_used": [
+  "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe"
+ ],
+ "ok": true
+}
