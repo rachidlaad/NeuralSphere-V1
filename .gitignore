@@ -11,3 +11,8 @@ tools/*.tar.gz
 tools/ngspice/
 # Scratch output of the interactive demo
 demo/last_run/
+demo/last_run_visual/
+# Texas Instruments OPA196 model: copyrighted, not redistributed. Fetch with tools/get_opa196_model.ps1
+tools/vendor_models/
+# Local pre-takeover placeholder
+README.md.before_2026-11-21
