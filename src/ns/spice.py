@@ -66,6 +66,9 @@ def circuit_cards(Gp, Gn, Rf, opamp="ideal", vos=None, vcc=C.VCC, vee=C.VEE,
               f"RD3_{k} tn{k} dp{k} {_fmt(C.R_DIFF)}",
               f"RD4_{k} dp{k} 0 {_fmt(C.R_DIFF)}",
               f"XD{k} dp{k} dm{k} s{k} vcc vee {model}{ext[2]}"]
+        if C.C_DIFF > 0:                                  # diff-amp compensation (open at DC), see config.C_DIFF
+            L += [f"CD2_{k} dm{k} s{k} {_fmt(C.C_DIFF)}",
+                  f"CD4_{k} dp{k} 0 {_fmt(C.C_DIFF)}"]
     if wta:
         L += wta_cards(n_out)
     return L

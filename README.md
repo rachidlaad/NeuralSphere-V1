@@ -42,11 +42,12 @@ Every design decision is derived with substituted numbers in **[docs/DESIGN.md](
 **Further electrical results:**
 - **Noise** (`.noise` with the OPA196 model; `results/s13_noise.json`, `plots/fig11_noise.png`).
   - Hand calculation and ngspice agree at 1 kHz within 0.01 %, both 139.8 nV/√Hz for S_0.
-  - With a 1 MHz readout filter, σ(S_k) = 291–302 µV.
-  - The smallest decision margin, 4.56 mV, is 10.8 σ, so P_err ≈ 2·10⁻²⁷. Noise does not cause any of the 12 errors.
+  - With a 1 MHz readout filter, σ(S_k) = 132–138 µV.
+  - The smallest decision margin, 4.56 mV, is 23.8 σ, so P_err ≈ 3·10⁻¹²⁵. Noise does not cause any of the 12 errors.
 - **Transient** (`results/s07_transient_energy*.json`, `plots/fig12_transient_opa196.png`). These figures exclude DACs, ADCs and programming circuitry.
-  - Generic model: settles in 4.1–5.1 µs; 3.55–3.72 µJ per 20 µs image period at 182 mW.
-  - OPA196: 1.39–1.57 µJ at 73.8 mW; settles in 5.0–6.3 µs. Its difference amplifiers ring at 0.68 MHz (ζ = 0.14), and a 4.7 pF compensation capacitor removes the ringing (DESIGN §11).
+  - Generic model: settles in 5.0–5.9 µs; 3.55–3.72 µJ per 20 µs image period at 182 mW.
+  - OPA196: 1.39–1.57 µJ at 73.8 mW; settles in 2.4–2.8 µs.
+  - Without compensation the OPA196 difference amplifiers rang at 0.68 MHz (ζ = 0.14, 38–50 % overshoot). A 4.7 pF capacitor across each feedback resistor, now part of the design, removes the ringing, halves settling and lowers noise 2.2×; it does not change any DC result (DESIGN §11).
 - **Robustness:** quantization, tolerance, offset and supply sweeps are in `results/s06_*` and `plots/fig6_robustness.png`.
 
 ## Repository layout

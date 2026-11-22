@@ -1,6 +1,6 @@
 {
  "stamp": {
-  "time": "2026-11-21 19:15:02",
+  "time": "2026-11-22 17:20:51",
   "host": "DESKTOP-8DACNP1",
   "platform": "Windows-11-10.0.22631-SP0",
   "python": "3.12.10",
@@ -321,7 +321,7 @@
  "disagreements_vs_software": 0,
  "disagreements_vs_OPA_REAL_s04": 0,
  "max_abs_S_minus_kirchhoff_V": 4.2260913116320964e-05,
- "mean_S_minus_kirchhoff_V": 3.315690035699988e-05,
+ "mean_S_minus_kirchhoff_V": 3.3156900426513765e-05,
  "max_abs_S_minus_OPA_REAL_V": 0.00021851039999987165,
  "max_abs_logit_err": 0.00017800909010823318,
  "min_top2_gap_V": 0.004562360970000068,
@@ -363,5 +363,5 @@
   "P_hand_mean_W": 0.07385158338542513,
   "P_spice_mean_W": 0.07501434128512792
  },
- "power_OPA_REAL_s04_mean_W": 0.18301433674706186
+ "power_OPA_REAL_s04_mean_W": 0.18301433674721462
 }

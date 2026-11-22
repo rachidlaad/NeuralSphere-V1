@@ -1,6 +1,6 @@
 {
  "stamp": {
-  "time": "2026-11-21 18:29:28",
+  "time": "2026-11-22 17:17:14",
   "host": "DESKTOP-8DACNP1",
   "platform": "Windows-11-10.0.22631-SP0",
   "python": "3.12.10",
@@ -152,14 +152,14 @@
  "ambiguous": 0,
  "wta_vs_argmax_disagreements": 0,
  "winner_line_V": {
-  "min": 4.99999713,
-  "mean": 4.999999990420277
+  "min": 4.9999971298,
+  "mean": 4.999999990708611
  },
  "loser_line_V": {
-  "max": 0.449292207,
-  "mean": 0.38193177925848765
+  "max": 0.44929220699,
+  "mean": 0.38193177925848454
  },
- "min_top2_gap_V": 0.00456765068999998,
+ "min_top2_gap_V": 0.004567650699999981,
  "median_top2_gap_V": 0.87592519245,
- "mean_total_power_W": 0.27509246744703375
+ "mean_total_power_W": 0.2750924674469921
 }

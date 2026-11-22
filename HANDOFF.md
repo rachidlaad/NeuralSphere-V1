@@ -306,25 +306,24 @@ powershell -ExecutionPolicy Bypass -File .\run_all.ps1          # adds s05 in-lo
 - **Noise** (`scripts/s13_noise.py`, `results/s13_noise.json`, `plots/fig11_noise.png`, DESIGN §10).
   - ngspice `.noise` at the operating point of test image 0, 0.1 Hz – 100 MHz, in 3 variants to split the contributions.
   - Hand density = SPICE within 0.01 % (139.8 nV/√Hz at 1 kHz for S_0).
-  - σ(S_k) = 291–302 µV with a 1 MHz first-order readout filter; 861–866 µV over the whole 0.1 Hz – 100 MHz band, because the vendor model's output noise plateaus above ~3 MHz.
-  - Worst decision margin 4.56 mV (image 18, S_9 − S_4) = 10.8 σ, so P ≈ 2·10⁻²⁷ (3.7 σ, P ≈ 1·10⁻⁴ without any band limit). Noise causes none of the 12 errors.
-  - Shares: op-amps 80 %, R_f + difference-amplifier resistors 19 %, synapses 1 %.
+  - With the 4.7 pF compensation (below): σ(S_k) = 132–138 µV with a 1 MHz first-order readout filter (was 291–302 µV before it), and 627–629 µV over the whole 0.1 Hz – 100 MHz band (was 861–866 µV). Hand check: e_S·√(π/2·f_d) = 139.8 nV/√Hz × √(π/2 × 338.6 kHz) = 102 µV, vs ngspice 111 µV for 0.1 Hz – 1 MHz.
+  - Worst decision margin 4.56 mV (image 18, S_9 − S_4) = 23.8 σ, so P ≈ 3·10⁻¹²⁵ (5.1 σ, P ≈ 1.4·10⁻⁷ without any band limit). Noise causes none of the 12 errors.
+  - Shares: op-amps 84 %, R_f + difference-amplifier resistors 15 %, synapses 1 %.
   - ngspice's `onoise_total` was unusable (returned 1.4·10⁹), so the rms values are integrals of the density.
 - **DESIGN §6 correction:** the TIA noise gain is 4.0–5.3 (ΣG = 0.537–0.760 mS per column), not ≈ 37.
 - **OPA196 transient (resolved 2026-11-22; DESIGN §11).**
   - With trapezoidal integration the full run did not finish (3.4 h; neuron 0 alone 17 h). With `.options method=gear` (vendor models only) it takes 40–48 s.
   - Cross-checks: methods agree within 3 mV where both finish; neuron 0 alone equals the full circuit within 0.15 mV; end-of-image outputs equal the s12 DC-sweep within 1.3 µV.
   - Result: same predictions as DC; 73.8 mW; **1.39–1.57 µJ per 20 µs image** (generic model 3.55–3.72 µJ); settling 5.0–6.3 µs (generic 4.1–5.1 µs).
-  - **Design finding:** the difference amplifiers ring at 0.679 MHz with ζ = 0.143 (overshoot 38–50 %), the same resonance as the 0.7 MHz noise peak. A 4.7 pF capacitor across RD2 and RD4 removes the ringing and halves settling (2.4–2.8 µs) with no DC change (≤ 0.4 µV). Evaluated, not yet adopted.
+  - **Design finding:** the difference amplifiers ring at 0.679 MHz with ζ = 0.143 (overshoot 38–50 %), the same resonance as the 0.7 MHz noise peak. **Adopted 2026-11-22:** `config.C_DIFF = 4.7 pF` across RD2 and RD4 of every difference amplifier (20 capacitors). OPA196: no overshoot, settling 2.4–2.8 µs, noise σ ÷ 2.2. Generic model: settling 5.0–5.9 µs (+0.9 µs). Every DC result is unchanged (≤ 1·10⁻¹⁰ V); all 17 archive checks pass (`logs/compare_cf4p7_vs_linux.md`). The Stage A Qucs-S schematic (DC only) does not include C_d.
 - **Published** as a public GitHub repository (MIT license). Commits use the GitHub noreply address.
 
 ## 9. Exact next steps (in order)
 
-Done since the first handoff: Windows run, Qucs-S schematic check, demo verification, vendor op-amp model, `.noise` analysis (old steps 1–5).
+Done since the first handoff: Windows run, Qucs-S schematic check, demo verification, vendor op-amp model, `.noise` analysis (old steps 1–5), OPA196 transient, 4.7 pF diff-amp compensation.
 
-1. **Adopt the 4.7 pF difference-amplifier compensation** (DESIGN §11): add C_f to `spice.circuit_cards` as an option, then re-run s12 (DC, unchanged expected), s13 (noise peak should disappear) and s07.
-2. **Repeat s06 non-idealities with the OPA196** (offset and tolerance with the vendor part; pass `vos` through the wrapper's `VOS` parameter).
-3. **Power reduction study.** Raise R_min/R_max (for example 100 kΩ–10 MΩ), use micro-power amplifiers and power-gate between inferences. Re-measure E per inference with s07.
-4. **V0.3/V0.4:** add a hidden layer (64 → 16 → 10) with an analog nonlinearity (diode/ReLU stage) between crossbars. Train ex situ, then in-loop. Target: fix digit "1" and test signal restoration between layers.
-5. **Stage E improvements:** stochastic rounding for low-bit programming, write-noise and endurance models, a per-column offset calibration step. Repeat with ≥ 3 seeds per chip so the improvement has error bars.
-6. **Toward V0.6 (hardware):** pick a digital potentiometer or DAC-plus-multiplying approach for programmable synapses. Build one 8-input differential column on a breadboard, then compare measurements with `s01`-style SPICE predictions.
+1. **Repeat s06 non-idealities with the OPA196** (offset and tolerance with the vendor part; pass `vos` through the wrapper's `VOS` parameter).
+2. **Power reduction study.** Raise R_min/R_max (for example 100 kΩ–10 MΩ), use micro-power amplifiers and power-gate between inferences. Re-measure E per inference with s07.
+3. **V0.3/V0.4:** add a hidden layer (64 → 16 → 10) with an analog nonlinearity (diode/ReLU stage) between crossbars. Train ex situ, then in-loop. Target: fix digit "1" and test signal restoration between layers.
+4. **Stage E improvements:** stochastic rounding for low-bit programming, write-noise and endurance models, a per-column offset calibration step. Repeat with ≥ 3 seeds per chip so the improvement has error bars.
+5. **Toward V0.6 (hardware):** pick a digital potentiometer or DAC-plus-multiplying approach for programmable synapses. Build one 8-input differential column on a breadboard, then compare measurements with `s01`-style SPICE predictions.

@@ -1,0 +1,110 @@
+{
+ "sigma_uV_primary": [
+  131.51,
+  136.33,
+  136.1,
+  135.94,
+  137.46,
+  135.3,
+  133.33,
+  133.84,
+  134.42,
+  133.89
+ ],
+ "sigma_S0_uV_by_band": {
+  "brickwall 0.1 Hz-10 kHz": 14.0,
+  "brickwall 0.1 Hz-100 kHz": 43.5,
+  "brickwall 0.1 Hz-1 MHz": 110.7,
+  "brickwall 0.1 Hz-10 MHz": 305.6,
+  "brickwall 0.1 Hz-100 MHz (worst case, whole simulated band)": 627.1,
+  "1st-order readout filter f_c = 100 kHz": 51.0,
+  "1st-order readout filter f_c = 1 MHz": 131.5
+ },
+ "share": {
+  "synapse_thermal_V2": 0.011546496062592176,
+  "Rf_and_diffamp_resistors_V2": 0.15128583889087793,
+  "opamps_V2": 0.8371676650465298
+ },
+ "worked": {
+  "4kT": "4 k T = 4 * 1.380649e-23 J/K * 300.15 K = 1.6576e-20 J",
+  "R_f thermal": "sqrt(4kT R_f) = sqrt(1.6576e-20 * 5600) = 9.63 nV/rtHz",
+  "synapse thermal (k=0, + column)": "R_f sqrt(4kT G_sum) = 5600 * sqrt(1.6576e-20 * 0.5365 mS) = 16.70 nV/rtHz",
+  "op-amp e_n x noise gain (k=0, +)": "e_n (1 + R_f G_sum) = 18.07 nV * (1 + 5600 * 0.5365 mS) = 18.07 * 4.004 = 72.36 nV/rtHz",
+  "diff-amp own noise": "sqrt(16 kT R_d + 4 e_n^2) = sqrt(6.6304e-15 + 4*(18.07 nV)^2) = 89.09 nV/rtHz",
+  "e_S(1 kHz), k=0": "hand 139.8 nV/rtHz vs ngspice 139.8 nV/rtHz",
+  "sigma_S, k=0": "hand: e_S sqrt(pi/2 f_d), f_d = 1/(2 pi R_d C_d) = 1/(2 pi * 100000 * 4.7 pF) = 338.6 kHz: 139.8 nV * sqrt(pi/2 * 3.386e+05 Hz) = 101.9 uV rms vs ngspice spectrum integrated 0.1 Hz-1 MHz 110.7 uV rms (includes the 1/f region and the model's high-frequency tail)"
+ },
+ "risk": {
+  "brickwall 0.1 Hz-10 kHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 210.63731801268028,
+   "worst_P_err_union_bound": 0.0,
+   "expected_noise_flips_over_360": 0.0,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((14.7 uV)^2 + (15.9 uV)^2) = 4.562 mV / 21.7 uV = 210.64;  Q(z) = 0"
+  },
+  "brickwall 0.1 Hz-100 kHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 67.98111829636834,
+   "worst_P_err_union_bound": 0.0,
+   "expected_noise_flips_over_360": 0.0,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((45.7 uV)^2 + (49.2 uV)^2) = 4.562 mV / 67.1 uV = 67.98;  Q(z) = 0"
+  },
+  "brickwall 0.1 Hz-1 MHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 27.805498522502237,
+   "worst_P_err_union_bound": 1.8610301571098934e-170,
+   "expected_noise_flips_over_360": 1.8610301571098934e-170,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((113.8 uV)^2 + (118.2 uV)^2) = 4.562 mV / 164.1 uV = 27.81;  Q(z) = 1.86e-170"
+  },
+  "brickwall 0.1 Hz-10 MHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 10.488435757313775,
+   "worst_P_err_union_bound": 4.8815648894529847e-26,
+   "expected_noise_flips_over_360": 4.8815648894529904e-26,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((306.7 uV)^2 + (308.4 uV)^2) = 4.562 mV / 435.0 uV = 10.49;  Q(z) = 4.88e-26"
+  },
+  "brickwall 0.1 Hz-100 MHz (worst case, whole simulated band)": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 5.136525618266207,
+   "worst_P_err_union_bound": 1.39932107622415e-07,
+   "expected_noise_flips_over_360": 1.3996458826806577e-07,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((627.7 uV)^2 + (628.5 uV)^2) = 4.562 mV / 888.2 uV = 5.14;  Q(z) = 1.4e-07"
+  },
+  "1st-order readout filter f_c = 100 kHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 58.55487956948642,
+   "worst_P_err_union_bound": 0.0,
+   "expected_noise_flips_over_360": 0.0,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((53.3 uV)^2 + (56.8 uV)^2) = 4.562 mV / 77.9 uV = 58.55;  Q(z) = 0"
+  },
+  "1st-order readout filter f_c = 1 MHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 23.775760563505926,
+   "worst_P_err_union_bound": 2.9753897803725876e-125,
+   "expected_noise_flips_over_360": 2.9753897803725876e-125,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((133.9 uV)^2 + (137.5 uV)^2) = 4.562 mV / 191.9 uV = 23.78;  Q(z) = 2.98e-125"
+  }
+ }
+}
+exit 0

@@ -16,7 +16,9 @@ Hand calculation in the flat (white) region, f = 1 kHz, T = 300.15 K (ngspice 27
                                          = 16 kT R_d + 4 e_n^2
   output density                   e_S^2 = e_tp^2 + e_tn^2 + e_d^2
 Integrated (single-pole approximation, ENBW = pi/2 * f_-3dB):
-  sigma_S^2 ~= (e_tp^2 + e_tn^2) * pi/2 * GBW/NG  +  e_d^2 * pi/2 * GBW/2
+  with the diff-amp compensation C_d (config.C_DIFF > 0) every term passes the diff-amp pole
+  f_d = 1/(2 pi R_d C_d), so  sigma_S^2 ~= e_S^2 * pi/2 * f_d ;
+  without it:  sigma_S^2 ~= (e_tp^2 + e_tn^2) * pi/2 * GBW/NG  +  e_d^2 * pi/2 * GBW/2
 SPICE rms noise is obtained by integrating the ngspice density spectrum ourselves,
   sigma^2(band) = integral e_S(f)^2 |H(f)|^2 df   (trapezoid on the log grid),
 for explicit readout bandwidths: brick-wall 0.1 Hz..f_max, and a first-order readout filter
@@ -109,13 +111,17 @@ at = lambda y, f0: float(10 ** np.interp(np.log10(f0), np.log10(f), np.log10(y))
 # ---- hand calculation per output
 fourkT = 4 * k_B * T
 hand = []
+F_D = 1 / (2 * pi * C.R_DIFF * C.C_DIFF) if C.C_DIFF > 0 else None   # diff-amp compensation pole [Hz]
 for k in range(10):
     gp, gn = m.Gp[k].sum(), m.Gn[k].sum()
     et = lambda g, en: fourkT * m.Rf + fourkT * g * m.Rf ** 2 + (en * (1 + m.Rf * g)) ** 2 + (in_ds * m.Rf) ** 2
     ed2 = 16 * k_B * T * C.R_DIFF + 4 * en_model ** 2
     eS = sqrt(et(gp, en_model) + et(gn, en_model) + ed2)
-    sig = sqrt(et(gp, en_model) * pi / 2 * GBW_model / (1 + m.Rf * gp) + et(gn, en_model) * pi / 2 * GBW_model / (1 + m.Rf * gn)
-               + ed2 * pi / 2 * GBW_model / 2)
+    if C.C_DIFF > 0:                                              # diff-amp pole band-limits everything
+        sig = eS * sqrt(pi / 2 * F_D)
+    else:
+        sig = sqrt(et(gp, en_model) * pi / 2 * GBW_model / (1 + m.Rf * gp) + et(gn, en_model) * pi / 2 * GBW_model / (1 + m.Rf * gn)
+                   + ed2 * pi / 2 * GBW_model / 2)
     hand.append(dict(k=k, G_sum_plus_S=gp, G_sum_minus_S=gn, noise_gain_plus=1 + m.Rf * gp, noise_gain_minus=1 + m.Rf * gn,
                      e_S_1kHz_hand=eS, e_S_1kHz_spice=at(dens["A"][k], 1e3),
                      sigma_S_hand_singlepole=sig, sigma_S_spice_brickwall_1MHz=float(sigma["brickwall 0.1 Hz-1 MHz"]["A"][k])))
@@ -127,7 +133,10 @@ worked = {
     "op-amp e_n x noise gain (k=0, +)": f"e_n (1 + R_f G_sum) = {en_model*1e9:.2f} nV * (1 + {m.Rf:.0f} * {gp0*1e3:.4f} mS) = {en_model*1e9:.2f} * {1+m.Rf*gp0:.3f} = {en_model*(1+m.Rf*gp0)*1e9:.2f} nV/rtHz",
     "diff-amp own noise": f"sqrt(16 kT R_d + 4 e_n^2) = sqrt({16*k_B*T*C.R_DIFF:.4e} + 4*({en_model*1e9:.2f} nV)^2) = {sqrt(16*k_B*T*C.R_DIFF + 4*en_model**2)*1e9:.2f} nV/rtHz",
     "e_S(1 kHz), k=0": f"hand {k0['e_S_1kHz_hand']*1e9:.1f} nV/rtHz vs ngspice {k0['e_S_1kHz_spice']*1e9:.1f} nV/rtHz",
-    "sigma_S, k=0": f"hand (single-pole, white noise only) {k0['sigma_S_hand_singlepole']*1e6:.1f} uV rms vs ngspice spectrum integrated 0.1 Hz-1 MHz {k0['sigma_S_spice_brickwall_1MHz']*1e6:.1f} uV rms (includes 1/f region and the peaking near 1 MHz)"}
+    "sigma_S, k=0": (f"hand: e_S sqrt(pi/2 f_d), f_d = 1/(2 pi R_d C_d) = 1/(2 pi * {C.R_DIFF:.0f} * {C.C_DIFF*1e12:.1f} pF) = {F_D/1e3:.1f} kHz: "
+                     f"{k0['e_S_1kHz_hand']*1e9:.1f} nV * sqrt(pi/2 * {F_D:.4g} Hz) = {k0['sigma_S_hand_singlepole']*1e6:.1f} uV rms"
+                     if C.C_DIFF > 0 else f"hand (single-pole, white noise only) {k0['sigma_S_hand_singlepole']*1e6:.1f} uV rms")
+                    + f" vs ngspice spectrum integrated 0.1 Hz-1 MHz {k0['sigma_S_spice_brickwall_1MHz']*1e6:.1f} uV rms (includes the 1/f region and the model's high-frequency tail)"}
 
 # ---- contributions (power split)
 contrib = dict(synapse_thermal_V2=(tot["A"] ** 2 - tot["B"] ** 2).tolist(),
@@ -159,7 +168,7 @@ sig = tot["A"]
 np.savez(C.RESULTS / "s13_noise_spectra.npz", f=f, A=dens["A"], B=dens["B"], C=dens["C"],
          **{f"sigma_{i}_{v}": sigma[b][v] for i, b in enumerate(BANDS) for v in "ABC"}, band_names=np.array(list(BANDS)))
 res = dict(stamp=stamp(), label="ELECTRICAL small-signal noise simulation (ngspice .noise), TI OPA196 vendor model",
-           operating_point=f"test image {IMG}", band_Hz=[0.1, 100e6], temperature_K=T,
+           operating_point=f"test image {IMG}", diffamp_C_F=C.C_DIFF, band_Hz=[0.1, 100e6], temperature_K=T,
            en_model_1kHz=en_model, en_datasheet_1kHz=15e-9, GBW_model_Hz=GBW_model,
            primary_band=PRIMARY, sigma_S_V=tot["A"].tolist(), sigma_S_logit_units=(tot["A"] / m.volts_per_logit).tolist(),
            sigma_S_V_by_band={b: sigma[b]["A"].tolist() for b in BANDS},

@@ -1383,6 +1383,8 @@ RD2_0 dm0 s0 100000
 RD3_0 tn0 dp0 100000
 RD4_0 dp0 0 100000
 XD0 dp0 dm0 s0 vcc vee OPA196 params: VOS=0 
+CD2_0 dm0 s0 4.7e-12
+CD4_0 dp0 0 4.7e-12
 XTP1 0 cp1 tp1 vcc vee OPA196 params: VOS=0 
 RFP1 cp1 tp1 5600
 XTN1 0 cn1 tn1 vcc vee OPA196 params: VOS=0 
@@ -1392,6 +1394,8 @@ RD2_1 dm1 s1 100000
 RD3_1 tn1 dp1 100000
 RD4_1 dp1 0 100000
 XD1 dp1 dm1 s1 vcc vee OPA196 params: VOS=0 
+CD2_1 dm1 s1 4.7e-12
+CD4_1 dp1 0 4.7e-12
 XTP2 0 cp2 tp2 vcc vee OPA196 params: VOS=0 
 RFP2 cp2 tp2 5600
 XTN2 0 cn2 tn2 vcc vee OPA196 params: VOS=0 
@@ -1401,6 +1405,8 @@ RD2_2 dm2 s2 100000
 RD3_2 tn2 dp2 100000
 RD4_2 dp2 0 100000
 XD2 dp2 dm2 s2 vcc vee OPA196 params: VOS=0 
+CD2_2 dm2 s2 4.7e-12
+CD4_2 dp2 0 4.7e-12
 XTP3 0 cp3 tp3 vcc vee OPA196 params: VOS=0 
 RFP3 cp3 tp3 5600
 XTN3 0 cn3 tn3 vcc vee OPA196 params: VOS=0 
@@ -1410,6 +1416,8 @@ RD2_3 dm3 s3 100000
 RD3_3 tn3 dp3 100000
 RD4_3 dp3 0 100000
 XD3 dp3 dm3 s3 vcc vee OPA196 params: VOS=0 
+CD2_3 dm3 s3 4.7e-12
+CD4_3 dp3 0 4.7e-12
 XTP4 0 cp4 tp4 vcc vee OPA196 params: VOS=0 
 RFP4 cp4 tp4 5600
 XTN4 0 cn4 tn4 vcc vee OPA196 params: VOS=0 
@@ -1419,6 +1427,8 @@ RD2_4 dm4 s4 100000
 RD3_4 tn4 dp4 100000
 RD4_4 dp4 0 100000
 XD4 dp4 dm4 s4 vcc vee OPA196 params: VOS=0 
+CD2_4 dm4 s4 4.7e-12
+CD4_4 dp4 0 4.7e-12
 XTP5 0 cp5 tp5 vcc vee OPA196 params: VOS=0 
 RFP5 cp5 tp5 5600
 XTN5 0 cn5 tn5 vcc vee OPA196 params: VOS=0 
@@ -1428,6 +1438,8 @@ RD2_5 dm5 s5 100000
 RD3_5 tn5 dp5 100000
 RD4_5 dp5 0 100000
 XD5 dp5 dm5 s5 vcc vee OPA196 params: VOS=0 
+CD2_5 dm5 s5 4.7e-12
+CD4_5 dp5 0 4.7e-12
 XTP6 0 cp6 tp6 vcc vee OPA196 params: VOS=0 
 RFP6 cp6 tp6 5600
 XTN6 0 cn6 tn6 vcc vee OPA196 params: VOS=0 
@@ -1437,6 +1449,8 @@ RD2_6 dm6 s6 100000
 RD3_6 tn6 dp6 100000
 RD4_6 dp6 0 100000
 XD6 dp6 dm6 s6 vcc vee OPA196 params: VOS=0 
+CD2_6 dm6 s6 4.7e-12
+CD4_6 dp6 0 4.7e-12
 XTP7 0 cp7 tp7 vcc vee OPA196 params: VOS=0 
 RFP7 cp7 tp7 5600
 XTN7 0 cn7 tn7 vcc vee OPA196 params: VOS=0 
@@ -1446,6 +1460,8 @@ RD2_7 dm7 s7 100000
 RD3_7 tn7 dp7 100000
 RD4_7 dp7 0 100000
 XD7 dp7 dm7 s7 vcc vee OPA196 params: VOS=0 
+CD2_7 dm7 s7 4.7e-12
+CD4_7 dp7 0 4.7e-12
 XTP8 0 cp8 tp8 vcc vee OPA196 params: VOS=0 
 RFP8 cp8 tp8 5600
 XTN8 0 cn8 tn8 vcc vee OPA196 params: VOS=0 
@@ -1455,6 +1471,8 @@ RD2_8 dm8 s8 100000
 RD3_8 tn8 dp8 100000
 RD4_8 dp8 0 100000
 XD8 dp8 dm8 s8 vcc vee OPA196 params: VOS=0 
+CD2_8 dm8 s8 4.7e-12
+CD4_8 dp8 0 4.7e-12
 XTP9 0 cp9 tp9 vcc vee OPA196 params: VOS=0 
 RFP9 cp9 tp9 5600
 XTN9 0 cn9 tn9 vcc vee OPA196 params: VOS=0 
@@ -1464,6 +1482,8 @@ RD2_9 dm9 s9 100000
 RD3_9 tn9 dp9 100000
 RD4_9 dp9 0 100000
 XD9 dp9 dm9 s9 vcc vee OPA196 params: VOS=0 
+CD2_9 dm9 s9 4.7e-12
+CD4_9 dp9 0 4.7e-12
 .control
 set noaskquit
 set wr_singlescale

@@ -1,6 +1,6 @@
 {
  "stamp": {
-  "time": "2026-11-21 18:31:09",
+  "time": "2026-11-22 17:17:17",
   "host": "DESKTOP-8DACNP1",
   "platform": "Windows-11-10.0.22631-SP0",
   "python": "3.12.10",
@@ -8,7 +8,7 @@
   "ngspice_version": "** ngspice-46 : Circuit level simulation program"
  },
  "qucs_s": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\qucs-s.exe",
- "qucs_version": "* Qucs 26.1.1  C:/Users/intel/AppData/Local/Temp/ns_qucs_7yad30mc/neuron_stageA.sch",
+ "qucs_version": "* Qucs 26.1.1  C:/Users/intel/AppData/Local/Temp/ns_qucs_nhi13g12/neuron_stageA.sch",
  "components_in_qucs_netlist": {
   "resistors": 16,
   "voltage_sources": 5,

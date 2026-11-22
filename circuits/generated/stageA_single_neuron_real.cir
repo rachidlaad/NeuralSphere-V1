@@ -31,6 +31,8 @@ RD2_0 dm0 s0 100000
 RD3_0 tn0 dp0 100000
 RD4_0 dp0 0 100000
 XD0 dp0 dm0 s0 vcc vee OPA_REAL params: VOS=0 
+CD2_0 dm0 s0 4.7e-12
+CD4_0 dp0 0 4.7e-12
 .control
 op
 alter VIN0 dc = 1

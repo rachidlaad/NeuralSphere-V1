@@ -1,7 +1,7 @@
-0 5 5 E=1.416 uJ settle=0.00 us decide=0.00 us
-1 2 2 E=1.547 uJ settle=6.33 us decide=0.65 us
-2 8 8 E=1.483 uJ settle=5.69 us decide=0.53 us
-3 1 6 E=1.461 uJ settle=4.97 us decide=6.29 us
-4 7 7 E=1.389 uJ settle=5.71 us decide=0.47 us
-5 2 2 E=1.568 uJ settle=5.69 us decide=0.65 us
+﻿0 5 5 E=1.416 uJ settle=0.00 us decide=0.00 us
+1 2 2 E=1.547 uJ settle=2.81 us decide=1.11 us
+2 8 8 E=1.483 uJ settle=2.69 us decide=0.77 us
+3 1 6 E=1.461 uJ settle=2.44 us decide=2.64 us
+4 7 7 E=1.389 uJ settle=2.67 us decide=0.63 us
+5 2 2 E=1.568 uJ settle=2.59 us decide=1.03 us
 tran exit 0

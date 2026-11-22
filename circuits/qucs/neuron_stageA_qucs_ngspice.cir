@@ -1,4 +1,4 @@
-* Qucs 26.1.1  C:/Users/intel/AppData/Local/Temp/ns_qucs_7yad30mc/neuron_stageA.sch
+* Qucs 26.1.1  C:/Users/intel/AppData/Local/Temp/ns_qucs_nhi13g12/neuron_stageA.sch
 .INCLUDE "C:/Users/intel/Documents/NeuralSphere-V1/tools/qucs-s/share/qucs-s/xspice_cmlib/include/ngspice_mathfunc.inc"
 VIN0 in0 0 DC 1
 RP0 _net0 in0  19802 tc1=0.0 tc2=0.0 

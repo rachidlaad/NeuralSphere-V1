@@ -30,6 +30,10 @@ G_MIN = 1.0 / R_MAX
 VCC = 5.0           # V   : positive rail
 VEE = -5.0          # V   : negative rail
 R_DIFF = 100e3      # ohm : the four equal resistors of each difference amplifier
+C_DIFF = 4.7e-12    # F   : compensation capacitor across RD2 (feedback) and RD4 (matching leg) of every
+                    #       difference amplifier. Open at DC, so no DC result depends on it. With the TI OPA196
+                    #       model it removes the 0.68 MHz ringing (zeta 0.14 -> no overshoot) and halves settling
+                    #       (DESIGN.md section 11). Time constant R_DIFF * C_DIFF = 0.47 us. Set 0 to omit.
 # R_F (transimpedance feedback) is chosen from the trained weights, see mapping.py
 
 # ---- Vendor amplifier model (Texas Instruments OPAx196, PSpice, unmodified) ---

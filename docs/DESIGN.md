@@ -46,6 +46,7 @@ All numbers come from the saved result files in `results/` and `weights/`.
 Circuit size, counted in the generated netlist `circuits/generated/full_64x10_*.cir`:
 - 1300 synapse resistors: 10 outputs × 65 inputs (64 pixels + bias) × 2 (G⁺ and G⁻)
 - 20 feedback resistors and 40 difference-amplifier resistors
+- 20 difference-amplifier compensation capacitors, 4.7 pF (added 2026-11-22, §11.2; open at DC)
 - 30 op-amps
 - 67 voltage sources: 64 inputs, the bias rail, VCC and VEE
 - Adding the WTA: 45 comparators, 90 diodes and 10 pull-up resistors
@@ -231,38 +232,41 @@ The output is e_S = √(e_tp² + e_tn² + e_d²) = √(74.9² + 77.4² + 89.09²
 
 ### 10.2 Spectrum and why "the" rms noise depends on readout bandwidth
 
+The circuit includes the difference-amplifier compensation C_d = 4.7 pF (§11, adopted 2026-11-22). The values from before it are kept for comparison.
+
 ngspice noise density of S_0 (`results/s13_noise.json`, `plots/fig11_noise.png`):
 
-| f | 0.1 Hz | 1 Hz | 10 Hz | 100 Hz | 1 kHz | 10 kHz | 100 kHz | 708 kHz (peak) | 10 MHz | 100 MHz |
+| f | 0.1 Hz | 1 Hz | 10 Hz | 100 Hz | 1 kHz | 10 kHz | 100 kHz | 1 MHz | 10 MHz | 100 MHz |
 |---|---|---|---|---|---|---|---|---|---|---|
-| e_S (nV/√Hz) | 1873 | 607 | 233 | 151 | 140 | 139 | 142 | 570 | 84 | 77 |
+| e_S (nV/√Hz), with C_d | 1873 | 607 | 233 | 151 | 140 | 139 | 135 | 96 | 89 | 41 |
+| without C_d | 1873 | 607 | 233 | 151 | 140 | 139 | 142 | 217 (peak 570 at 0.71 MHz) | 84 | 77 |
 
 - **Below ~100 Hz:** 1/f noise of the vendor model. It contributes only 2.1 µV rms from 0.1 to 100 Hz.
-- **100 Hz – 200 kHz:** flat. Check: σ = e_S·√B = 139.8 nV/√Hz × √(10⁴ Hz) = 14.0 µV. ngspice, integrated 0.1 Hz – 10 kHz, also gives **14.0 µV**.
-- **Peak near 0.7 MHz:** closed-loop noise peaking of the amplifiers (the model's higher-order poles). 98 % of the 0.1 Hz – 1 MHz noise power lies between 100 kHz and 1 MHz.
-- **Above ~3 MHz:** a flat ~80 nV/√Hz plateau that comes from the vendor model alone (variant C = A there). A real readout has finite bandwidth, so rms noise must be quoted **per readout bandwidth**. ngspice's own `onoise_total` vector was unusable here (wrdata returned 1.4·10⁹ for every run), so the rms values are integrals of the density, σ² = ∫ e_S²·|H(f)|² df:
+- **100 Hz – 100 kHz:** flat. Check: σ = e_S·√B = 139.8 nV/√Hz × √(10⁴ Hz) = 14.0 µV, and ngspice, integrated 0.1 Hz – 10 kHz, also gives **14.0 µV**.
+- **Without C_d** there was a resonance peak at 0.71 MHz: the difference-amplifier ringing of §11. **With C_d** the peak is gone. Every output component passes through the difference amplifier, whose compensation pole is f_d = 1/(2π·R_d·C_d) = 1/(2π × 100 kΩ × 4.7 pF) = **338.6 kHz**.
+- **Above ~3 MHz** the vendor model leaves a tail of op-amp output noise (~90 nV/√Hz, falling to 41 nV/√Hz at 100 MHz). A real readout is band-limited, so rms noise is quoted **per readout bandwidth**. ngspice's own `onoise_total` vector was unusable here (wrdata returned 1.4·10⁹ for every run), so the rms values are integrals of the density, σ² = ∫ e_S²·|H(f)|² df.
 
-| Readout bandwidth | σ(S_k), 10 outputs | worst-image margin / σ_diff | P_err (union bound), worst image |
-|---|---|---|---|
-| brick-wall 0.1 Hz – 10 kHz | 14.0 – 15.9 µV | 210.6 | < 10⁻³⁰⁰ |
-| brick-wall 0.1 Hz – 100 kHz | 44.2 – 50.0 µV | 66.9 | < 10⁻³⁰⁰ |
-| 1st-order filter f_c = 100 kHz | 72.1 – 78.0 µV | 42.3 | < 10⁻³⁰⁰ |
-| **1st-order filter f_c = 1 MHz** (primary) | **291 – 302 µV** | **10.8** | **1.8·10⁻²⁷** |
-| brick-wall 0.1 Hz – 1 MHz | 325 – 337 µV | 9.67 | 2.1·10⁻²² |
-| brick-wall 0.1 Hz – 10 MHz | 429 – 438 µV | 7.41 | 6.3·10⁻¹⁴ |
-| brick-wall 0.1 Hz – 100 MHz (worst case) | 861 – 866 µV | 3.73 | 9.5·10⁻⁵ |
+**Hand check of the rms noise with C_d:** σ ≈ e_S·√(π/2·f_d) = 139.8 nV/√Hz × √(π/2 × 338.6 kHz) = **101.9 µV**. ngspice integrated 0.1 Hz – 1 MHz gives **110.7 µV**; the difference is the 1/f region and the tail above f_d. For the 10 outputs: hand 102–116 µV vs ngspice 111–118 µV.
 
-The primary choice is a 1st-order readout filter at f_c = 1 MHz. Its time constant is τ = 1/(2π·1 MHz) = 0.16 µs, so it settles in 5τ = 0.8 µs, well inside the 20 µs image period. In logits, 291–302 µV / 0.23741 V = **1.2·10⁻³–1.3·10⁻³ logit units**.
+| Readout bandwidth | σ(S_k), with C_d | worst-image margin / σ_diff | P_err (union bound), worst image | σ(S_k) without C_d |
+|---|---|---|---|---|
+| brick-wall 0.1 Hz – 10 kHz | 14.0 – 15.9 µV | 210.6 | < 10⁻³⁰⁰ | 14.0 – 15.9 µV |
+| brick-wall 0.1 Hz – 100 kHz | 43.5 – 49.2 µV | 68.0 | < 10⁻³⁰⁰ | 44.2 – 50.0 µV |
+| 1st-order filter f_c = 100 kHz | 51.0 – 56.8 µV | 58.6 | < 10⁻³⁰⁰ | 72.1 – 78.0 µV |
+| **1st-order filter f_c = 1 MHz** (primary) | **131.5 – 137.5 µV** | **23.8** | **3·10⁻¹²⁵** | 291 – 302 µV |
+| brick-wall 0.1 Hz – 1 MHz | 110.7 – 118.2 µV | 27.8 | 2·10⁻¹⁷⁰ | 325 – 337 µV |
+| brick-wall 0.1 Hz – 10 MHz | 305.6 – 308.4 µV | 10.5 | 4.9·10⁻²⁶ | 429 – 438 µV |
+| brick-wall 0.1 Hz – 100 MHz (worst case) | 627.1 – 628.5 µV | 5.14 | 1.4·10⁻⁷ | 861 – 866 µV |
 
-*Single-pole hand estimate for comparison:* σ² ≈ (e_tp² + e_tn²)·(π/2)·GBW/NG + e_d²·(π/2)·GBW/2, with GBW = 2.87 MHz. For S_0 this gives 175 µV. ngspice integrated to 1 MHz gives 325 µV. The hand formula misses the peaking near 0.7 MHz, which is why the SPICE spectrum is needed.
+The primary choice is a 1st-order readout filter at f_c = 1 MHz. Its time constant is τ = 1/(2π·1 MHz) = 0.16 µs, so it settles in 5τ = 0.8 µs, well inside the 20 µs image period. In logits, 131.5–137.5 µV / 0.23741 V = **5.5·10⁻⁴–5.8·10⁻⁴ logit units**. The compensation capacitor lowered this σ by a factor of 2.2.
 
 **Where the noise comes from** (power shares, 1 MHz readout, mean of the 10 outputs; A − B, B − C, C):
 
 | Source | Share of σ² |
 |---|---|
-| op-amps (e_n × noise gain, peaking) | 79.8 % |
-| R_f and difference-amplifier resistors | 19.2 % |
-| 1300 synapse resistors | 1.0 % |
+| op-amps (e_n × noise gain, model tail) | 83.7 % |
+| R_f and difference-amplifier resistors | 15.1 % |
+| 1300 synapse resistors | 1.2 % |
 
 The synapse resistors matter least because their thermal-noise current, √(4kT·ΣG) = √(1.6576·10⁻²⁰ × 0.54 mS) = 3.0 pA/√Hz, is small next to the op-amp noise multiplied by NG = 4–5.
 
@@ -274,10 +278,10 @@ The 360 OPA196 test outputs come from §9. Noise on different outputs is assumed
 
 The smallest margin is test image 18 (true 9, predicted 9), S_9 − S_4 = 0.87580 − 0.87124 V = **4.562 mV**:
 
-- With the 1 MHz readout: z = 4.562 mV / √((295.8 µV)² + (301.8 µV)²) = 4.562 mV / 422.6 µV = **10.8**, so Q(10.8) = **1.8·10⁻²⁷**.
-- With the full 0.1 Hz – 100 MHz band (worst case): z = 4.562 mV / √(862.9² + 865.5²) µV = 4.562 mV / 1222 µV = **3.73**, so Q = **9.5·10⁻⁵**. Summed over all 360 test images, the expected number of noise-induced flips is 9.6·10⁻⁵.
+- With the 1 MHz readout: z = 4.562 mV / √((133.9 µV)² + (137.5 µV)²) = 4.562 mV / 191.9 µV = **23.8**, so Q(23.8) = **3·10⁻¹²⁵**. Without C_d it was z = 10.8 and Q = 1.8·10⁻²⁷.
+- With the full 0.1 Hz – 100 MHz band (worst case): z = 4.562 mV / √(627.7² + 628.5²) µV = 4.562 mV / 888.2 µV = **5.14**, so Q = **1.4·10⁻⁷**. Without C_d it was 3.73 and 9.5·10⁻⁵.
 
-**Conclusion (electrical simulation).** With any readout bandwidth up to 10 MHz, amplifier and resistor noise cannot change a single test decision; P ≤ 6·10⁻¹⁴ per image. Without a band limit it would still be below 10⁻⁴. The 12 test errors (348/360) are therefore classification errors of the **software-trained** linear model, not noise. For comparison, the static non-idealities in s06 do flip decisions: uniform ±1 % resistor tolerance lowers the worst of 5 trials to 96.39 %, and 2-bit quantization lowers accuracy to 94.44 %. Static device errors, not noise, are the accuracy limit of this circuit.
+**Conclusion (electrical simulation).** With any readout bandwidth up to 10 MHz, amplifier and resistor noise cannot change a single test decision; P ≤ 5·10⁻²⁶ per image. Even without a band limit, P is at most 1.4·10⁻⁷. The 12 test errors (348/360) are therefore classification errors of the **software-trained** linear model, not noise. For comparison, the static non-idealities in s06 do flip decisions: uniform ±1 % resistor tolerance lowers the worst of 5 trials to 96.39 %, and 2-bit quantization lowers accuracy to 94.44 %. Static device errors, not noise, are the accuracy limit of this circuit.
 
 **Limits:**
 
@@ -288,45 +292,56 @@ The smallest margin is test image 18 (true 9, predicted 9), S_9 − S_4 = 0.8758
 
 ---
 
-## 11. Transient response with the OPA196 (`scripts/s07_transient_energy.py opa196`)
+## 11. Transient response and difference-amplifier compensation (`scripts/s07_transient_energy.py`)
 
-**This is ELECTRICAL simulation:** ngspice `.tran` of the full circuit with the TI model. Six test images are presented for 20 µs each, with 100 ns input edges and a 20 ns maximum step. Outputs are `results/s07_transient_energy_opa196.json` and `plots/fig12_transient_opa196.png`.
+**This is ELECTRICAL simulation:** ngspice `.tran` of the full circuit. Six test images are presented for 20 µs each, with 100 ns input edges and a 20 ns maximum step. Outputs are `results/s07_transient_energy*.json` and `plots/fig12_transient_opa196.png`.
 
-**Numerical method.** With ngspice's default trapezoidal integration this run did not finish: it ran 3.4 h and reached 1.9 GB of memory. One neuron simulated alone ran 17 h without finishing.
+**Numerical method.** With ngspice's default trapezoidal integration the OPA196 run did not finish: it ran 3.4 h and reached 1.9 GB of memory. One neuron simulated alone ran 17 h without finishing.
 
-The cause is a real circuit effect, ringing, which keeps the model's internal hysteretic switches toggling and forces bursts of tiny time steps. With **Gear integration** (`.options method=gear`) the full run takes 40–48 s. Three checks support the result:
+The cause is a real circuit effect, ringing, which keeps the model's internal hysteretic switches toggling and forces bursts of tiny time steps. For vendor models s07 therefore uses **Gear integration** (`.options method=gear`), and the full run takes 40–60 s. Three checks support the result:
 - Where both methods finish, they agree within 3 mV.
 - Neuron 0 simulated alone agrees with the full circuit within 0.15 mV, as it should, because the neurons share only ideal sources.
-- The end-of-image outputs agree with the DC-sweep results of §9 within **1.3 µV**.
+- The end-of-image outputs agree with the DC-sweep results of §9 within **1.4 µV**.
 
-**Results** (6 images; generic `OPA_REAL` results from the same script for comparison):
+### 11.1 The ringing (design as first built, without compensation)
 
-| | Generic OPA_REAL | TI OPA196 |
-|---|---|---|
-| Predictions (true 5, 2, 8, 1, 7, 2) | 5, 2, 8, 6, 7, 2 | 5, 2, 8, 6, 7, 2 (same, = DC result) |
-| Settling to 1 % of 2 V full scale | 4.1 – 5.1 µs | 5.0 – 6.3 µs |
-| Overshoot of S_k after an image change | none (single pole) | 38 – 50 % of the step |
-| Mean power | 181.8 mW | **73.8 mW** |
-| Energy per 20 µs image period | 3.55 – 3.72 µJ | **1.39 – 1.57 µJ** |
+With the OPA196 the difference amplifiers ringed after every image change, while the TIA outputs settled smoothly. The generic single-pole model cannot show this. Measured on output S_2 after the image change at 20 µs, successive positive peaks were +0.684, +0.276, +0.100 V:
 
-Energy hand check: E = ∫P dt ≈ P̄·T = 73.84 mW × 20 µs = 1.477 µJ. The mean of the six SPICE values is also 1.477 µJ. The crossbar itself (inputs + bias rail) uses only 0.066–0.099 µJ per image; the amplifiers' quiescent and load power dominate.
-
-**The ringing is a design finding, not a numerical artefact.** It shows up in the difference amplifiers (S_k), while the TIA outputs settle smoothly. Measured on output S_2 after the image change at 20 µs, successive positive peaks are +0.684, +0.276, +0.100 V:
-
-- Ringing period T_d = 1.47 µs, so f_d = 1/T_d = **0.679 MHz**. This is the same resonance as the 0.708 MHz noise peak in §10, which comes from the AC analysis and therefore does not depend on the integration method.
-- Logarithmic decrement δ = ln(0.684/0.276) = 0.907, so ζ = δ/√(4π² + δ²) = **0.143**. That is a phase margin of only about 15°.
+- Ringing period T_d = 1.47 µs, so f_d = 1/T_d = **0.679 MHz**. This is the same resonance as the 0.71 MHz noise peak, which comes from the AC analysis and therefore does not depend on the integration method.
+- Logarithmic decrement δ = ln(0.684/0.276) = 0.907, so ζ = δ/√(4π² + δ²) = **0.143**. That is a phase margin of only about 15°, and the outputs overshot by 38–50 % of each step.
 - Decay time constant τ = 1/(ζ·ω_n) = 1/(0.143 × 2π × 0.686 MHz) = 1.62 µs.
-- Predicted settling time: τ·ln(0.684 V / 20 mV) = 1.62 µs × 3.53 = **5.7 µs**, the same as the 5.7 µs measured.
+- Predicted settling time: τ·ln(0.684 V / 20 mV) = 1.62 µs × 3.53 = 5.7 µs, the same as the 5.7 µs measured.
 
-Likely mechanism: the difference amplifier's inverting input sees R_d‖R_d = 50 kΩ together with the op-amp's input capacitance, which adds a pole near the loop crossover (noise gain 2 → crossover ≈ GBW/2 ≈ 1.4 MHz) and erodes the phase margin. The generic single-pole model cannot show this.
+Likely mechanism: the difference amplifier's inverting input sees R_d‖R_d = 50 kΩ together with the op-amp's input capacitance, which adds a pole near the loop crossover (noise gain 2 → crossover ≈ GBW/2 ≈ 1.4 MHz) and erodes the phase margin.
 
-**Fix (evaluated, not yet adopted in the baseline design):** a feedback capacitor C_f across RD2 (feedback resistor), with a matching C_f across RD4 so the gain stays balanced. Full-circuit runs:
+### 11.2 Compensation: C_d = 4.7 pF across RD2 and RD4 (adopted 2026-11-22)
 
-| C_f | Overshoot | Settling (1 % FS) | Change in settled S_k |
+`config.C_DIFF = 4.7e-12`. `spice.circuit_cards` adds `CD2_k` across RD2 (feedback) and a matching `CD4_k` across RD4, so the gain stays balanced. This adds 20 capacitors in total. Their time constant is R_d·C_d = 100 kΩ × 4.7 pF = 0.47 µs.
+
+A capacitor is an open circuit at DC, so **no DC result changes**. Re-running the pipeline confirmed it: s03, s04, s08 and s12 outputs are identical to within print resolution (≤ 1·10⁻¹⁰ V; WTA lines ≤ 3·10⁻⁹ V), and all 17 checks against the archived Linux run pass.
+
+Candidate values, full-circuit OPA196 runs before adoption:
+
+| C_d | Overshoot | Settling (1 % FS) | Change in settled S_k |
 |---|---|---|---|
 | none | 38 – 50 % | 5.0 – 6.3 µs | – |
 | **4.7 pF** | **0** | **2.4 – 2.8 µs** | ≤ 0.4 µV |
 | 10 pF | 0 | 4.6 – 5.3 µs | ≤ 0.4 µV |
-| 22 pF | 0 | 9.3 – 10.9 µs | ≤ 0.34 mV (τ = R_d·C_f = 2.2 µs, too slow for 20 µs) |
+| 22 pF | 0 | 9.3 – 10.9 µs | ≤ 0.34 mV (τ = 2.2 µs, too slow for 20 µs) |
 
-C_f = 4.7 pF gives the time constant R_d·C_f = 100 kΩ × 4.7 pF = 0.47 µs. It removes the ringing, halves the settling time, and leaves every DC result unchanged. It should also remove the 0.7 MHz noise peak, which would lower σ in §10; that has not been re-simulated yet.
+**Results with C_d = 4.7 pF** (6 images, true labels 5, 2, 8, 1, 7, 2):
+
+| | Generic OPA_REAL | TI OPA196 | OPA196 without C_d (before) |
+|---|---|---|---|
+| Predictions | 5, 2, 8, 6, 7, 2 | 5, 2, 8, 6, 7, 2 (= DC result) | same |
+| Settling to 1 % of 2 V full scale | 5.0 – 5.9 µs (was 4.1 – 5.1 µs) | **2.4 – 2.8 µs** | 5.0 – 6.3 µs |
+| Overshoot | none | **none** | 38 – 50 % |
+| Mean power | 181.8 mW | **73.8 mW** | 73.8 mW |
+| Energy per 20 µs image period | 3.55 – 3.72 µJ | **1.39 – 1.57 µJ** | 1.39 – 1.57 µJ |
+| Noise σ(S_k), 1 MHz readout (§10) | – | **132 – 138 µV** | 291 – 302 µV |
+
+The trade-off is visible in the generic model: it never rang, so C_d only adds its 0.47 µs pole there, and settling grows by about 0.9 µs. With the real part, C_d **halves** settling, removes the overshoot and lowers the noise by a factor of 2.2.
+
+Energy hand check: E = ∫P dt ≈ P̄·T = 73.84 mW × 20 µs = 1.477 µJ. The mean of the six SPICE values is also 1.477 µJ. The crossbar itself (inputs + bias rail) uses only 0.066–0.099 µJ per image; the amplifiers' quiescent and load power dominate. C_d does not change the power.
+
+*Not updated:* the Stage A Qucs-S schematic (`circuits/qucs/neuron_stageA.sch`, s01/s10/s11) is a DC check and does not include C_d. At DC the result is identical.
