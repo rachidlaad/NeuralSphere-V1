@@ -311,18 +311,18 @@ powershell -ExecutionPolicy Bypass -File .\run_all.ps1          # adds s05 in-lo
   - Shares: op-amps 80 %, R_f + difference-amplifier resistors 19 %, synapses 1 %.
   - ngspice's `onoise_total` was unusable (returned 1.4·10⁹), so the rms values are integrals of the density.
 - **DESIGN §6 correction:** the TIA noise gain is 4.0–5.3 (ΣG = 0.537–0.760 mS per column), not ≈ 37.
-- **Open issue: OPA196 transient.**
-  - The full 30-amplifier transient did not progress usefully in ngspice: a 2 µs slice was still unfinished after 28 min, and the full run was stopped after 3.4 h at 1.9 GB.
-  - `s07_transient_energy.py opa196` therefore simulates the 10 neurons as separate exact sub-circuits (the shared inputs and supplies are ideal sources) and sums their source currents.
-  - Neurons 1–9 finish in 1–14 min. **Neuron 0 does not finish** (stopped after 17 h at 3.7 GB): probable timestep collapse at a hysteretic switch in the model.
-  - This step is excluded from `run_all.ps1`. Ideas: `.options method=gear`, raising `abstol`/`chgtol`, smoothing the PWL edges, or starting from the DC-sweep operating point.
+- **OPA196 transient (resolved 2026-11-22; DESIGN §11).**
+  - With trapezoidal integration the full run did not finish (3.4 h; neuron 0 alone 17 h). With `.options method=gear` (vendor models only) it takes 40–48 s.
+  - Cross-checks: methods agree within 3 mV where both finish; neuron 0 alone equals the full circuit within 0.15 mV; end-of-image outputs equal the s12 DC-sweep within 1.3 µV.
+  - Result: same predictions as DC; 73.8 mW; **1.39–1.57 µJ per 20 µs image** (generic model 3.55–3.72 µJ); settling 5.0–6.3 µs (generic 4.1–5.1 µs).
+  - **Design finding:** the difference amplifiers ring at 0.679 MHz with ζ = 0.143 (overshoot 38–50 %), the same resonance as the 0.7 MHz noise peak. A 4.7 pF capacitor across RD2 and RD4 removes the ringing and halves settling (2.4–2.8 µs) with no DC change (≤ 0.4 µV). Evaluated, not yet adopted.
 - **Published** as a public GitHub repository (MIT license). Commits use the GitHub noreply address.
 
 ## 9. Exact next steps (in order)
 
 Done since the first handoff: Windows run, Qucs-S schematic check, demo verification, vendor op-amp model, `.noise` analysis (old steps 1–5).
 
-1. **Fix the OPA196 transient for neuron 0** (see §8b). Then report settling time and energy per inference with the vendor model, next to the generic model's 3.55–3.72 µJ.
+1. **Adopt the 4.7 pF difference-amplifier compensation** (DESIGN §11): add C_f to `spice.circuit_cards` as an option, then re-run s12 (DC, unchanged expected), s13 (noise peak should disappear) and s07.
 2. **Repeat s06 non-idealities with the OPA196** (offset and tolerance with the vendor part; pass `vos` through the wrapper's `VOS` parameter).
 3. **Power reduction study.** Raise R_min/R_max (for example 100 kΩ–10 MΩ), use micro-power amplifiers and power-gate between inferences. Re-measure E per inference with s07.
 4. **V0.3/V0.4:** add a hidden layer (64 → 16 → 10) with an analog nonlinearity (diode/ReLU stage) between crossbars. Train ex situ, then in-loop. Target: fix digit "1" and test signal restoration between layers.

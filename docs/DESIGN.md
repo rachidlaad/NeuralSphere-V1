@@ -285,3 +285,48 @@ The smallest margin is test image 18 (true 9, predicted 9), S_9 − S_4 = 0.8758
 - No resistor excess (1/f) noise.
 - Ideal, noiseless input DACs and supplies.
 - Integration down to 0.1 Hz treats slow 1/f drift as noise, although it really behaves as a slowly varying offset.
+
+---
+
+## 11. Transient response with the OPA196 (`scripts/s07_transient_energy.py opa196`)
+
+**This is ELECTRICAL simulation:** ngspice `.tran` of the full circuit with the TI model. Six test images are presented for 20 µs each, with 100 ns input edges and a 20 ns maximum step. Outputs are `results/s07_transient_energy_opa196.json` and `plots/fig12_transient_opa196.png`.
+
+**Numerical method.** With ngspice's default trapezoidal integration this run did not finish: it ran 3.4 h and reached 1.9 GB of memory. One neuron simulated alone ran 17 h without finishing.
+
+The cause is a real circuit effect, ringing, which keeps the model's internal hysteretic switches toggling and forces bursts of tiny time steps. With **Gear integration** (`.options method=gear`) the full run takes 40–48 s. Three checks support the result:
+- Where both methods finish, they agree within 3 mV.
+- Neuron 0 simulated alone agrees with the full circuit within 0.15 mV, as it should, because the neurons share only ideal sources.
+- The end-of-image outputs agree with the DC-sweep results of §9 within **1.3 µV**.
+
+**Results** (6 images; generic `OPA_REAL` results from the same script for comparison):
+
+| | Generic OPA_REAL | TI OPA196 |
+|---|---|---|
+| Predictions (true 5, 2, 8, 1, 7, 2) | 5, 2, 8, 6, 7, 2 | 5, 2, 8, 6, 7, 2 (same, = DC result) |
+| Settling to 1 % of 2 V full scale | 4.1 – 5.1 µs | 5.0 – 6.3 µs |
+| Overshoot of S_k after an image change | none (single pole) | 38 – 50 % of the step |
+| Mean power | 181.8 mW | **73.8 mW** |
+| Energy per 20 µs image period | 3.55 – 3.72 µJ | **1.39 – 1.57 µJ** |
+
+Energy hand check: E = ∫P dt ≈ P̄·T = 73.84 mW × 20 µs = 1.477 µJ. The mean of the six SPICE values is also 1.477 µJ. The crossbar itself (inputs + bias rail) uses only 0.066–0.099 µJ per image; the amplifiers' quiescent and load power dominate.
+
+**The ringing is a design finding, not a numerical artefact.** It shows up in the difference amplifiers (S_k), while the TIA outputs settle smoothly. Measured on output S_2 after the image change at 20 µs, successive positive peaks are +0.684, +0.276, +0.100 V:
+
+- Ringing period T_d = 1.47 µs, so f_d = 1/T_d = **0.679 MHz**. This is the same resonance as the 0.708 MHz noise peak in §10, which comes from the AC analysis and therefore does not depend on the integration method.
+- Logarithmic decrement δ = ln(0.684/0.276) = 0.907, so ζ = δ/√(4π² + δ²) = **0.143**. That is a phase margin of only about 15°.
+- Decay time constant τ = 1/(ζ·ω_n) = 1/(0.143 × 2π × 0.686 MHz) = 1.62 µs.
+- Predicted settling time: τ·ln(0.684 V / 20 mV) = 1.62 µs × 3.53 = **5.7 µs**, the same as the 5.7 µs measured.
+
+Likely mechanism: the difference amplifier's inverting input sees R_d‖R_d = 50 kΩ together with the op-amp's input capacitance, which adds a pole near the loop crossover (noise gain 2 → crossover ≈ GBW/2 ≈ 1.4 MHz) and erodes the phase margin. The generic single-pole model cannot show this.
+
+**Fix (evaluated, not yet adopted in the baseline design):** a feedback capacitor C_f across RD2 (feedback resistor), with a matching C_f across RD4 so the gain stays balanced. Full-circuit runs:
+
+| C_f | Overshoot | Settling (1 % FS) | Change in settled S_k |
+|---|---|---|---|
+| none | 38 – 50 % | 5.0 – 6.3 µs | – |
+| **4.7 pF** | **0** | **2.4 – 2.8 µs** | ≤ 0.4 µV |
+| 10 pF | 0 | 4.6 – 5.3 µs | ≤ 0.4 µV |
+| 22 pF | 0 | 9.3 – 10.9 µs | ≤ 0.34 mV (τ = R_d·C_f = 2.2 µs, too slow for 20 µs) |
+
+C_f = 4.7 pF gives the time constant R_d·C_f = 100 kΩ × 4.7 pF = 0.47 µs. It removes the ringing, halves the settling time, and leaves every DC result unchanged. It should also remove the 0.7 MHz noise peak, which would lower σ in §10; that has not been re-simulated yet.

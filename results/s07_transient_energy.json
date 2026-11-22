@@ -1,12 +1,13 @@
 {
  "stamp": {
-  "time": "2026-11-21 18:28:08",
+  "time": "2026-11-22 16:58:02",
   "host": "DESKTOP-8DACNP1",
   "platform": "Windows-11-10.0.22631-SP0",
   "python": "3.12.10",
   "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
   "ngspice_version": "** ngspice-46 : Circuit level simulation program"
  },
+ "opamp": "real",
  "image_period_s": 2e-05,
  "per_image": [
   {
@@ -136,6 +137,7 @@
    ]
   }
  ],
+ "method": "full circuit in one ngspice run, trapezoidal integration",
  "mean_power_W": 0.18183000190498688,
  "mean_amp_power_W": 0.17763993248550847,
  "mean_crossbar_power_W": 0.004190069419478428,

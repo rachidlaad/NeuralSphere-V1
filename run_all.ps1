@@ -27,9 +27,7 @@ if (-not $Quick) {
                 "s05_stageE_in_loop.py 15 chipC_2bit_gauss20pct_vos20mV 2.0",
                 "s05_stageE_in_loop.py 15 chipC_2bit_gauss20pct_vos20mV 0.5",
                 "s06_nonidealities.py",
-                "s12_opa196_stageD.py", "s13_noise.py")
-    # "s07_transient_energy.py opa196" is NOT run here: with the TI model, neuron 0's transient does not finish
-    # (timestep collapse, >17 h); see HANDOFF.md, open issues.
+                "s12_opa196_stageD.py", "s13_noise.py", "s07_transient_energy.py opa196")
 }
 $steps += @("s07_transient_energy.py", "s08_wta.py", "s10_qucs_schematic.py", "s11_qucs_native_check.py", "s09_figures.py")
 foreach ($s in $steps) {

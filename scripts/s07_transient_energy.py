@@ -4,9 +4,7 @@
   - instantaneous power P(t) = sum over sources of V * I
   - energy per inference E = integral P dt over one image period
 """
-import re, subprocess, sys, tempfile
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
+import subprocess, sys, tempfile
 import numpy as np
 from _common import C, stamp
 from ns import spice
@@ -39,53 +37,18 @@ vecs = [f"v(s{k})" for k in range(10)] + ["i(VCC)", "i(VEE)", "i(VB)"] + \
        [f"i(VIN{i})" for i in range(64)] + [f"v(in{i})" for i in range(64)]
 ctl = [".control", "set wr_singlescale", "option numdgt=8",
        f"tran 20n {len(IDX)*T:.9g} 0 20n", f"wrdata {out_file} " + " ".join(vecs), "quit", ".endc", ".end"]
+# Vendor models: use Gear (BDF) integration. With the default trapezoidal rule the TI OPA196 model's
+# difference amplifiers ring (~0.75 MHz, a real resonance of the 100 kOhm network with the model's input
+# capacitance, also visible as the 0.7 MHz peak in s13) and the model's internal switches chatter, so the
+# timestep collapses: the full run did not finish in 3.4 h. With Gear it takes ~40 s, and where both methods
+# finish they agree within 3 mV.
+opts = [".options method=gear"] if AMP in spice.VENDOR_MODELS else []
 net = C.GEN / f"transient_6images_{AMP}.cir"
-net.write_text("\n".join(lines + ctl) + "\n")
-SPLIT = AMP in spice.VENDOR_MODELS
-
-
-def neuron_slice(k):
-    """Neuron k's exact sub-circuit: its 130 synapses, 2 TIAs and difference amplifier, plus the shared sources."""
-    pat = (r"^(RP|RN)(\d+)_\d+ ", r"^(XTP|XTN|RFP|RFN|XD)(\d+) ", r"^(RD\d)_(\d+) ")
-    out = []
-    for l in lines:
-        mm = next((re.match(p_, l) for p_ in pat if re.match(p_, l)), None)
-        if mm is None or int(mm.group(2)) == k:
-            out.append(l)
-    return out
-
-
-def run_neuron(k):
-    wdk = Path(tempfile.mkdtemp(prefix=f"ns_tran{k}_")); spice.prepare_workdir(wdk, AMP)
-    vk = [f"v(s{k})", "i(VCC)", "i(VEE)", "i(VB)"] + [f"i(VIN{i})" for i in range(64)] + [f"v(in{i})" for i in range(64)]
-    ck = [".control", "set wr_singlescale", "option numdgt=8", "save " + " ".join(vk),
-          f"tran 20n {len(IDX)*T:.9g} 0 20n", "linearize " + " ".join(vk),      # common uniform 20 ns grid
-          f"wrdata {(wdk / 'o.txt').as_posix()} " + " ".join(vk), "quit", ".endc", ".end"]
-    (wdk / "n.cir").write_text("\n".join(neuron_slice(k) + ck) + "\n")
-    pk = subprocess.run([C.ngspice_exe(), "-b", "n.cir"], capture_output=True, text=True, cwd=wdk)
-    if not (wdk / "o.txt").exists():
-        raise RuntimeError(f"neuron {k}: " + pk.stdout[-1500:] + pk.stderr[-1500:])
-    return np.loadtxt(wdk / "o.txt")
-
-
-if SPLIT:
-    # Vendor models: the full 30-amplifier transient is impractically slow in ngspice (a 2 us slice did not finish in
-    # 28 min, while one neuron simulates 2 us in 0.7 s). Because the 64 inputs, the bias rail and the +/-5 V supplies are
-    # ideal voltage sources, the 10 neurons do not interact, so the full circuit equals the 10 neuron sub-circuits
-    # simulated separately; each source's current is the sum of its currents into the 10 sub-circuits.
-    with ThreadPoolExecutor(10) as ex:
-        parts = list(ex.map(run_neuron, range(10)))
-    n = min(len(q) for q in parts); parts = [q[:n] for q in parts]
-    t = parts[0][:, 0]
-    assert all(np.allclose(q[:, 0], t) for q in parts), "neuron time grids differ"
-    cur = sum(q[:, 2:4 + 1 + 64] for q in parts)                                # i(VCC), i(VEE), i(VB), i(VIN0..63)
-    cols = np.column_stack([np.column_stack([q[:, 1] for q in parts]), cur, parts[0][:, 5 + 64:5 + 128]])
-    np.savetxt(out_file, np.column_stack([t, cols]), fmt="%.8e")
-else:
-    wd = tempfile.mkdtemp(prefix="ns_tran_"); spice.prepare_workdir(wd, AMP)
-    p = subprocess.run([C.ngspice_exe(), "-b", str(net)], capture_output=True, text=True, cwd=wd)
-    A = np.loadtxt(out_file)
-    t = A[:, 0]; cols = A[:, 1:]
+net.write_text("\n".join(lines + opts + ctl) + "\n")
+wd = tempfile.mkdtemp(prefix="ns_tran_"); spice.prepare_workdir(wd, AMP)   # PSpice mode for vendor models
+p = subprocess.run([C.ngspice_exe(), "-b", str(net)], capture_output=True, text=True, cwd=wd)
+A = np.loadtxt(out_file)
+t = A[:, 0]; cols = A[:, 1:]
 s = cols[:, :10]; ivcc, ivee, ivb = cols[:, 10], cols[:, 11], cols[:, 12]
 iin = cols[:, 13:77]; vin = cols[:, 77:141]
 P = -C.VCC * ivcc - C.VEE * ivee - C.VBIAS * ivb - (vin * iin).sum(1)
@@ -111,8 +74,7 @@ for n in range(len(IDX)):
                     final_scores_V=final.tolist()))
 np.savez(C.RESULTS / f"s07_transient{SUF}.npz", t=t, s=s, P=P, P_amp=P_amp, P_xbar=P_xbar, vin=vin, idx=IDX, T=T)
 res = dict(stamp=stamp(), opamp=AMP, image_period_s=T, per_image=per,
-           method=("10 exact neuron sub-circuits simulated separately (ideal shared sources), resampled to a 20 ns grid "
-                   "with ngspice linearize, source currents summed" if SPLIT else "full circuit in one ngspice run"),
+           method="full circuit in one ngspice run" + (", Gear integration" if opts else ", trapezoidal integration"),
            mean_power_W=float(P.mean()), mean_amp_power_W=float(P_amp.mean()),
            mean_crossbar_power_W=float(P_xbar.mean()),
            notes=["Energy is integrated over the full 20 us image period, so it scales with the period chosen.",
@@ -126,3 +88,17 @@ for r in per:
     print(r["test_index"], r["true"], r["predicted"], f"E={r['energy_J']*1e6:.3f} uJ",
           f"settle={r['settling_time_s']*1e6:.2f} us", f"decide={r['decision_time_s']*1e6:.2f} us")
 save_json(res, C.RESULTS / f"s07_transient_energy{SUF}.json")
+
+# ---- vendor-model figure: compare with the generic-model transient (if it exists)
+gen = C.RESULTS / "s07_transient.npz"
+if AMP != "real" and gen.exists():
+    import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+    g = np.load(gen)
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4.2))
+    for a, (tt, ss, lab) in zip(ax, ((g["t"], g["s"], "generic OPA_REAL"), (t, s, f"TI {AMP.upper()} model"))):
+        for k in range(10):
+            a.plot(tt * 1e6, ss[:, k], lw=.9)
+        a.set(xlim=(18, 32), xlabel="time (us)", ylabel="S_k (V)", title=f"ELECTRICAL: ngspice .tran, {lab}\n"
+              f"image change at 20 us (test #{IDX[0]} -> #{IDX[1]}), 10 outputs")
+        a.grid(lw=.3, alpha=.5)
+    fig.tight_layout(); fig.savefig(C.PLOTS / f"fig12_transient_{AMP}.png", dpi=130); plt.close(fig)

@@ -1,0 +1,149 @@
+{
+ "stamp": {
+  "time": "2026-11-22 16:56:50",
+  "host": "DESKTOP-8DACNP1",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.10",
+  "ngspice": "C:\\Users\\intel\\Documents\\NeuralSphere-V1\\tools\\qucs-s\\bin\\ngspice_con.exe",
+  "ngspice_version": "** ngspice-46 : Circuit level simulation program"
+ },
+ "opamp": "opa196",
+ "image_period_s": 2e-05,
+ "per_image": [
+  {
+   "test_index": 0,
+   "true": 5,
+   "predicted": 5,
+   "energy_J": 1.4156916287424942e-06,
+   "crossbar_energy_J": 7.254829874249401e-08,
+   "settling_time_s": 0.0,
+   "decision_time_s": 0.0,
+   "final_scores_V": [
+    0.169005067,
+    -0.855936917,
+    -0.802588861,
+    -0.0107958505,
+    -0.341757872,
+    1.33742953,
+    -0.149381921,
+    -0.626385839,
+    0.344761182,
+    0.935983331
+   ]
+  },
+  {
+   "test_index": 1,
+   "true": 2,
+   "predicted": 2,
+   "energy_J": 1.5474128745112154e-06,
+   "crossbar_energy_J": 9.421794027070158e-08,
+   "settling_time_s": 6.329205999999997e-06,
+   "decision_time_s": 6.492059999999968e-07,
+   "final_scores_V": [
+    -0.627634094,
+    0.0948175335,
+    1.34547588,
+    0.1679635,
+    -0.570841215,
+    0.458896831,
+    0.282696955,
+    -0.998912927,
+    0.428978737,
+    -0.581110313
+   ]
+  },
+  {
+   "test_index": 2,
+   "true": 8,
+   "predicted": 8,
+   "energy_J": 1.4826978665411138e-06,
+   "crossbar_energy_J": 8.191113164842754e-08,
+   "settling_time_s": 5.691143799999994e-06,
+   "decision_time_s": 5.311437999999961e-07,
+   "final_scores_V": [
+    -0.501399284,
+    0.563219778,
+    -0.299385934,
+    -0.122837422,
+    0.136044639,
+    -0.426285176,
+    -0.229463748,
+    -0.0432500271,
+    0.860628047,
+    0.0630608271
+   ]
+  },
+  {
+   "test_index": 3,
+   "true": 1,
+   "predicted": 6,
+   "energy_J": 1.4606121128532378e-06,
+   "crossbar_energy_J": 8.968079966848157e-08,
+   "settling_time_s": 4.972351699999994e-06,
+   "decision_time_s": 6.292351699999988e-06,
+   "final_scores_V": [
+    -0.109930096,
+    0.425529476,
+    -0.19314757,
+    -1.19345397,
+    0.114869932,
+    0.115364874,
+    0.59060559,
+    0.0507040214,
+    0.578896828,
+    -0.379107204
+   ]
+  },
+  {
+   "test_index": 4,
+   "true": 7,
+   "predicted": 7,
+   "energy_J": 1.3893924003106508e-06,
+   "crossbar_energy_J": 6.646537826298966e-08,
+   "settling_time_s": 5.7060195999999975e-06,
+   "decision_time_s": 4.6601960000000023e-07,
+   "final_scores_V": [
+    -0.79558969,
+    -0.558404229,
+    0.0879354798,
+    0.533145058,
+    -0.132992884,
+    0.128686255,
+    -0.520710214,
+    1.33802304,
+    0.298324585,
+    -0.378085566
+   ]
+  },
+  {
+   "test_index": 5,
+   "true": 2,
+   "predicted": 2,
+   "energy_J": 1.5676788854968081e-06,
+   "crossbar_energy_J": 9.859710367175278e-08,
+   "settling_time_s": 5.690734999999999e-06,
+   "decision_time_s": 6.507349999999927e-07,
+   "final_scores_V": [
+    -0.312047364,
+    -0.562676763,
+    1.33140712,
+    1.05173407,
+    -1.1342712,
+    0.0839733289,
+    -0.0983902342,
+    -0.270032616,
+    0.460175481,
+    -0.549540744
+   ]
+  }
+ ],
+ "method": "full circuit in one ngspice run, Gear integration",
+ "mean_power_W": 0.07384312576530602,
+ "mean_amp_power_W": 0.06965272884214309,
+ "mean_crossbar_power_W": 0.004190396923162933,
+ "notes": [
+  "Energy is integrated over the full 20 us image period, so it scales with the period chosen.",
+  "Amplifier quiescent power 30 x 140 uA x 10 V = 42 mW (TI OPA196 model) plus the load current the TIAs sink from the -5 V rail.",
+  "Not included: DACs that generate the input voltages, programming circuitry, ADC/readout, wiring capacitance, leakage, clock/control logic."
+ ]
+}

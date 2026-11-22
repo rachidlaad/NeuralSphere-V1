@@ -1464,6 +1464,7 @@ RD2_9 dm9 s9 100000
 RD3_9 tn9 dp9 100000
 RD4_9 dp9 0 100000
 XD9 dp9 dm9 s9 vcc vee OPA196 params: VOS=0 
+.options method=gear
 .control
 set wr_singlescale
 option numdgt=8

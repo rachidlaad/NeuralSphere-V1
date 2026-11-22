@@ -44,7 +44,9 @@ Every design decision is derived with substituted numbers in **[docs/DESIGN.md](
   - Hand calculation and ngspice agree at 1 kHz within 0.01 %, both 139.8 nV/√Hz for S_0.
   - With a 1 MHz readout filter, σ(S_k) = 291–302 µV.
   - The smallest decision margin, 4.56 mV, is 10.8 σ, so P_err ≈ 2·10⁻²⁷. Noise does not cause any of the 12 errors.
-- **Transient, generic model** (`results/s07_transient_energy.json`): output settles within ~5 µs; 3.55–3.72 µJ per 20 µs image period at 182 mW. This excludes DACs, ADCs and programming circuitry.
+- **Transient** (`results/s07_transient_energy*.json`, `plots/fig12_transient_opa196.png`). These figures exclude DACs, ADCs and programming circuitry.
+  - Generic model: settles in 4.1–5.1 µs; 3.55–3.72 µJ per 20 µs image period at 182 mW.
+  - OPA196: 1.39–1.57 µJ at 73.8 mW; settles in 5.0–6.3 µs. Its difference amplifiers ring at 0.68 MHz (ζ = 0.14), and a 4.7 pF compensation capacitor removes the ringing (DESIGN §11).
 - **Robustness:** quantization, tolerance, offset and supply sweeps are in `results/s06_*` and `plots/fig6_robustness.png`.
 
 ## Repository layout
@@ -115,7 +117,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\get_opa196_model.ps1
 
 - This is a simulation only. Energy figures exclude DACs, ADCs, programming circuitry and parasitics, so no ASIC efficiency claim is made.
 - The model is linear (a single layer). Digit "1" is the weakest class, and software makes the same errors.
-- The OPA196 transient analysis does not complete in ngspice for one neuron (timestep collapse); see `HANDOFF.md`.
+- With the OPA196 model, transient runs need Gear integration (trapezoidal stalls on the model's switches during ringing); `s07` sets this automatically.
 - The comparators are behavioural models. Conductance "programming" is an ideal netlist rewrite, with no write noise or endurance limits.
 
 ## License
