@@ -32,6 +32,9 @@ VEE = -5.0          # V   : negative rail
 R_DIFF = 100e3      # ohm : the four equal resistors of each difference amplifier
 # R_F (transimpedance feedback) is chosen from the trained weights, see mapping.py
 
+# ---- Vendor amplifier model (Texas Instruments OPAx196, PSpice, unmodified) ---
+OPA196_LIB = ROOT / "tools" / "vendor_models" / "opa196_extracted" / "OPAx196.LIB"
+
 # ---- ngspice executable ------------------------------------------------------
 def ngspice_exe():
     env = os.environ.get("NGSPICE")

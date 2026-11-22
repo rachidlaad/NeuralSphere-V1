@@ -1,0 +1,3 @@
+bench: {'IQ_per_amp_A': 0.000140000033, 'VOS_buffer_V': 1.67688988e-05, 'AOL_dc_dB': 141.555762, 'AOL_1kHz_dB': 69.1682752, 'GBW_Hz': 2873516.928509876, 'unity_gain_crossing_Hz': 2840203.98959494, 'en_10Hz': 3.54190775e-08, 'en_100Hz': 2.02704295e-08, 'en_1kHz': 1.80701044e-08}
+OPA196 test 348 / 360, train 1410 / 1437, disagree vs software 0 | max|S-Kirchhoff| 4.2260913116320964e-05 | P mean 0.07501434128512792 W (hand 0.07385158338542513 )
+exit 0

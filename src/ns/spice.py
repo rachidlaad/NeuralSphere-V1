@@ -25,10 +25,17 @@ def circuit_cards(Gp, Gn, Rf, opamp="ideal", vos=None, vcc=C.VCC, vee=C.VEE,
     vos    : (n_out, 3) input offset voltages [V] for TIA+, TIA-, diff-amp (real model)
     """
     n_out = Gp.shape[0]
-    model = "OPA_IDEAL" if opamp == "ideal" else "OPA_REAL"
+    model = {"ideal": "OPA_IDEAL", "real": "OPA_REAL", "opa196": "OPA196"}[opamp]
     L = [f"* NeuralSphere-V1 differential resistive crossbar: {n_in} inputs + bias -> {n_out} outputs",
          f"* amplifier model: {model}",
-         f".include \"{(C.MODELS / 'neuralsphere_models.lib').as_posix()}\"",
+         f".include \"{(C.MODELS / 'neuralsphere_models.lib').as_posix()}\""]
+    if opamp == "opa196":
+        if not C.OPA196_LIB.exists():
+            raise FileNotFoundError(f"{C.OPA196_LIB} missing. The TI model is not redistributed; fetch it with "
+                                    "'powershell -ExecutionPolicy Bypass -File .\\tools\\get_opa196_model.ps1'")
+        L += [f".include \"{C.OPA196_LIB.as_posix()}\"",
+              f".include \"{(C.MODELS / 'opa196_wrapper.lib').as_posix()}\""]
+    L += [
          "* ---- supplies and reference rail",
          f"VCC vcc 0 DC {_fmt(vcc)}",
          f"VEE vee 0 DC {_fmt(vee)}",
@@ -109,17 +116,53 @@ def control_block(Vin, vecs, out_file):
     return L
 
 
+def sweep_cards(body, Vchunk):
+    """Image-index DC sweep (used for slow-converging vendor models).
+
+    Each pixel source VIN_i (kept as a 0 V ammeter so i(VIN_i) is still its current) is
+    driven by a behavioural source whose value is a piecewise-linear function of the
+    sweep voltage v(sel):  V_i(sel = r) = Vchunk[r, i] exactly at integer r.
+    A `dc VSEL 0 n-1 1` sweep then solves image after image, each Newton solve starting
+    from the previous image's operating point instead of from zero."""
+    out = []
+    for l in body:
+        mm = re.match(r"^VIN(\d+) in\d+ 0 DC 0$", l)
+        if mm:
+            i = int(mm.group(1)); col = Vchunk[:, i]
+            if len(col) == 1:
+                pts = f"{_fmt(col[0])}"
+            else:
+                pts = "pwl(v(sel), " + ", ".join(f"{r}, {_fmt(v)}" for r, v in enumerate(col)) + ")"
+            out += [f"VIN{i} in{i} xin{i} DC 0", f"BIN{i} xin{i} 0 V = {pts}"]
+        else:
+            out.append(l)
+    return out + ["VSEL sel 0 DC 0", "RSEL sel 0 1meg"]
+
+
+def sweep_control(n, vecs, out_file):
+    return [".control", "set noaskquit", "set wr_singlescale", "option numdgt=10",
+            f"dc VSEL 0 {n - 1} 1" if n > 1 else "op",
+            f"wrdata {out_file} " + " ".join(vecs), "quit", ".endc"]
+
+
 def run(Gp, Gn, Rf, Vin, opamp="ideal", vos=None, vcc=C.VCC, vee=C.VEE, opa_params="",
-        wta=False, workers=None, chunk=200, keep_netlist=None, workdir=None):
+        wta=False, workers=None, chunk=200, keep_netlist=None, workdir=None, extra=(), sweep=None):
     """Simulate a batch of images. Vin: (n_img, 64) input voltages [V].
 
-    Returns dict of arrays: s (n,10), tp, tn, i_vcc, i_vee, i_vb, i_in (n,64), [w].
+    opamp : "ideal" | "real" (own macromodels) | "opa196" (TI vendor model, PSpice mode)
+    extra : additional ngspice vectors to record, e.g. ("v(cp0)", "v(cn0)"); returned in
+            res["extra"][name] as (n,) arrays. Default () keeps the original behaviour.
+    sweep : None -> automatic (True for vendor models), else force on/off. Same circuit and
+            same equations; only the order/initial guess of ngspice's Newton solves differs.
+    Returns dict of arrays: s (n,10), tp, tn, i_vcc, i_vee, i_vb, i_in (n,64), [w], [extra].
     """
+    sweep = (opamp in VENDOR_MODELS) if sweep is None else sweep
     Vin = np.atleast_2d(np.asarray(Vin, float))
     body = circuit_cards(Gp, Gn, Rf, opamp, vos, vcc, vee, opa_params, wta)
-    vecs = out_vectors(Gp.shape[0], wta)
+    vecs = out_vectors(Gp.shape[0], wta) + list(extra)
     workdir = Path(workdir or tempfile.mkdtemp(prefix="ns_spice_"))
     workdir.mkdir(parents=True, exist_ok=True)
+    prepare_workdir(workdir, opamp)
     chunks = [Vin[a:a + chunk] for a in range(0, len(Vin), chunk)]
 
     def job(ci):
@@ -127,11 +170,19 @@ def run(Gp, Gn, Rf, Vin, opamp="ideal", vos=None, vcc=C.VCC, vee=C.VEE, opa_para
         out = workdir / f"out_{ci}.txt"
         if out.exists():
             out.unlink()
-        lines = body + control_block(chunks[ci], vecs, out.as_posix()) + [".end"]
+        if sweep:
+            # row 0 = blank image (all pixel sources 0 V): a defined power-up state from which
+            # every sweep starts; its solution is discarded below.
+            Vs = np.vstack([np.zeros((1, chunks[ci].shape[1])), chunks[ci]])
+            lines = sweep_cards(body, Vs) + sweep_control(len(Vs), vecs, out.as_posix()) + [".end"]
+        else:
+            lines = body + control_block(chunks[ci], vecs, out.as_posix()) + [".end"]
         net.write_text("\n".join(l for l in lines if l is not None) + "\n")
-        p = subprocess.run([C.ngspice_exe(), "-b", str(net)], capture_output=True, text=True)
+        p = subprocess.run([C.ngspice_exe(), "-b", str(net)], capture_output=True, text=True, cwd=workdir)
         if not out.exists():
             raise RuntimeError(f"ngspice failed (chunk {ci}):\n{p.stdout[-3000:]}\n{p.stderr[-3000:]}")
+        if sweep:
+            return parse_wrdata(out, len(vecs), len(chunks[ci]) + 1)[1:]
         return parse_wrdata(out, len(vecs), len(chunks[ci]))
 
     workers = workers or min(len(chunks), os.cpu_count() or 2)
@@ -145,11 +196,29 @@ def run(Gp, Gn, Rf, Vin, opamp="ideal", vos=None, vcc=C.VCC, vee=C.VEE, opa_para
     res = dict(s=A[:, 0:n], tp=A[:, n:2 * n], tn=A[:, 2 * n:3 * n],
                i_vcc=A[:, 3 * n], i_vee=A[:, 3 * n + 1], i_vb=A[:, 3 * n + 2],
                i_in=A[:, 3 * n + 3:3 * n + 3 + C.N_IN])
+    base = 3 * n + 3 + C.N_IN
     if wta:
-        res["w"] = A[:, 3 * n + 3 + C.N_IN:]
+        res["w"] = A[:, base:base + n]
+        base += n
+    if extra:
+        res["extra"] = {name: A[:, base + j] for j, name in enumerate(extra)}
     res["vin"] = Vin
     res["vcc"], res["vee"] = vcc, vee
     return res
+
+
+def prepare_workdir(workdir, opamp):
+    """Vendor (PSpice) models need ngspice's PSpice compatibility mode. ngspice reads
+    .spiceinit from its working directory before parsing the netlist, so we put one
+    there for vendor models only (our own models keep the default ngspice behaviour)."""
+    init = Path(workdir) / ".spiceinit"
+    if opamp in VENDOR_MODELS:
+        init.write_text("set ngbehavior=ps\n")
+    elif init.exists():
+        init.unlink()
+
+
+VENDOR_MODELS = ("opa196",)
 
 
 def parse_wrdata(path, nvec, nrows):

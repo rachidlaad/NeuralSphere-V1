@@ -271,33 +271,60 @@ powershell -ExecutionPolicy Bypass -File .\run_all.ps1          # adds s05 in-lo
 
 ## 8. Unresolved problems and blockers
 
-1. **Not yet executed on Windows.** Partway through the session, the automatic safety check in Claude's tooling blocked Claude from launching further PowerShell scripts on your PC through the Run dialog; an earlier attempt to start a background job-runner had been blocked the same way. `tools\setup_ngspice.ps1` (download of the official ngspice-47 Windows build) was therefore never run, and `run_all.ps1` has not been run on Windows. You need to start these yourself.
-2. **Qucs-S schematic not visually checked.** Computer use (screen control) was not turned on in the Claude desktop app, so Claude could not open Qucs-S. The pin geometry assumed for the Qucs `OpAmp` symbol is "+ input on top, − input on the bottom". It is consistent with the Qucs source as recalled, but unverified. If the opened schematic gives S ≈ ±5 V instead of −0.439 V, the op-amp inputs are swapped: mirror the three op-amps.
+1. *(Resolved 2026-11-21, see §8a.)* **Not yet executed on Windows.** Partway through the session, the automatic safety check in Claude's tooling blocked Claude from launching further PowerShell scripts on your PC through the Run dialog; an earlier attempt to start a background job-runner had been blocked the same way. `tools\setup_ngspice.ps1` (download of the official ngspice-47 Windows build) was therefore never run, and `run_all.ps1` has not been run on Windows. You need to start these yourself.
+2. *(Resolved, see §8a.)* **Qucs-S schematic not visually checked.** Computer use (screen control) was not turned on in the Claude desktop app, so Claude could not open Qucs-S. The pin geometry assumed for the Qucs `OpAmp` symbol is "+ input on top, − input on the bottom". It is consistent with the Qucs source as recalled, but unverified. If the opened schematic gives S ≈ ±5 V instead of −0.439 V, the op-amp inputs are swapped: mirror the three op-amps.
 3. **Digit "1" accuracy is 80.6 %** (7 of 36 misclassified). This is a limitation of the linear model, not the circuit: software has the same errors. Fixing it needs a hidden layer (V0.3/V0.4).
-4. **Op-amp macromodel is generic.** It omits slew rate, noise, input bias current, CMRR/PSRR and temperature, and it is not a specific part. The amplifier choice dominates power (150 mW of 183 mW).
+4. *(Addressed with the TI OPA196 vendor model, see §8b.)* **Op-amp macromodel is generic.** It omits slew rate, noise, input bias current, CMRR/PSRR and temperature, and it is not a specific part. The amplifier choice dominates power (150 mW of 183 mW).
 5. **Comparator model is behavioural** (tanh), not a transistor-level or vendor model.
 6. **Energy numbers exclude DACs, ADC, programming circuitry and parasitics.** No ASIC-level efficiency claim can be made.
 7. **Stage E learning is chip-in-the-loop, not on-device learning.** Gradients are computed digitally from measured outputs, and conductances are "re-programmed" by rewriting the netlist (an ideal write with no write noise or endurance limits).
-8. **Static, noise-free resistors.** Input noise was injected as a static per-image sample. There is no thermal/1/f noise analysis (`.noise`) yet.
+8. *(`.noise` analysis added, see §8b.)* **Static, noise-free resistors.** Input noise was injected as a static per-image sample. There is no thermal/1/f noise analysis (`.noise`) yet.
 9. The `chunks\` folder (split source tarball) and `ngspice-47.tar.gz` are transfer leftovers. They are safe to delete once you no longer need the ngspice source.
 
 ---
 
+## 8a. Windows validation (2026-11-21, second session)
+
+- **Backup:** `archive\linux_ngspice47_2026-11-21\` holds the Linux/ngspice-47 `results`, `plots`, `weights`, `data`, `circuits\generated`, `circuits\qucs` (55 files, `MANIFEST.sha256` verified, files set read-only).
+- **Git:** repository initialised in this folder only (`main`); commit `4176f66` is the as-handed-over baseline. `.venv`, `tools\qucs-s`, transfer archives and demo scratch output are ignored.
+- **`run_all.ps1 -Quick` on Windows** (ngspice-46 from Qucs-S, Python 3.12.10): 7 min 20 s, all 17 checks in `scripts\compare_runs.py` pass. Report: `logs\compare_quick_windows_vs_linux.md`.
+  - Software weights differ from Linux by ≤ 1.8·10⁻¹⁵ (floating-point rounding); every SPICE voltage by ≤ 2.6·10⁻⁹ V (print resolution of `numdgt=10`); all predictions identical.
+  - 348/360 in s03 (ideal), s04 D1 and D2 (realistic), s08 (WTA); s00 passes.
+- **Demo:** `scripts\verify_demo_gui.py` drives both Tk demos; each image selection starts exactly one ngspice process, rewrites `out_0.txt`, and yields 10 distinct S_k voltages (`results\demo_gui_verification.json`, screenshots `plots\demo_gui_*.png`).
+- **New visual demo** `demo\neuralsphere_visual.py`: digit → 64 source voltages → per-synapse currents of all 1300 resistors (Ohm's law on ngspice node voltages, KCL-checked against the R_f current) → column currents → S_k → WTA lines → predicted digit, with substituted formulas; includes an 8×8 drawing pad. Software logits are shown only as labelled reference markers.
+- **Qucs-S schematic (§8.2 resolved):** `scripts\s11_qucs_native_check.py` uses Qucs-S's own netlister and `--run` (same path as F2). Qucs-S assigns + input = ground for both TIAs; v(s) = −0.439311 V vs hand −0.4393125 V. Rendered drawing: `plots\fig10_qucs_schematic.png/.svg`. Qucs-S 26.1.1's CLI PNG export is broken (uninitialised background), so SVG is rasterised with Edge.
+- **`run_all.ps1` fix:** the full run now repeats the archived Stage E exactly (chips A,B: 10 iterations lr 2; chip C: 15 iterations at lr 2 and at lr 0.5). Before, it ran all chips for 10 iterations at lr 2 only, and skipped lr 0.5.
+- `spice.run` gained an optional `extra=` list of vectors (default unchanged).
+
+## 8b. Vendor op-amp, noise and publication (2026-11-21/22)
+
+- **TI OPA196 macromodel** (`scripts/s12_opa196_stageD.py`, `results/s12_opa196_stageD.json`, DESIGN §9).
+  - Bench check vs datasheet: I_Q 140.00 µA (140), A_OL 141.6 dB (140), GBW 2.87 MHz (2.5), e_n 18.1 nV/√Hz at 1 kHz (15), V_OS 16.8 µV.
+  - Full inference: 348/360 test and 1410/1437 train; 0 disagreements with software or with OPA_REAL; mean power 75.0 mW vs 183.0 mW.
+  - Batches run as an image-index DC sweep (`spice.sweep_cards`), because a fresh `.op` per image is slow and once landed in a different DC state (hysteretic switches in the model).
+  - The TI library is copyrighted and is **not** in the git repository. `tools/get_opa196_model.ps1` downloads it and verifies its SHA-256.
+- **Noise** (`scripts/s13_noise.py`, `results/s13_noise.json`, `plots/fig11_noise.png`, DESIGN §10).
+  - ngspice `.noise` at the operating point of test image 0, 0.1 Hz – 100 MHz, in 3 variants to split the contributions.
+  - Hand density = SPICE within 0.01 % (139.8 nV/√Hz at 1 kHz for S_0).
+  - σ(S_k) = 291–302 µV with a 1 MHz first-order readout filter; 861–866 µV over the whole 0.1 Hz – 100 MHz band, because the vendor model's output noise plateaus above ~3 MHz.
+  - Worst decision margin 4.56 mV (image 18, S_9 − S_4) = 10.8 σ, so P ≈ 2·10⁻²⁷ (3.7 σ, P ≈ 1·10⁻⁴ without any band limit). Noise causes none of the 12 errors.
+  - Shares: op-amps 80 %, R_f + difference-amplifier resistors 19 %, synapses 1 %.
+  - ngspice's `onoise_total` was unusable (returned 1.4·10⁹), so the rms values are integrals of the density.
+- **DESIGN §6 correction:** the TIA noise gain is 4.0–5.3 (ΣG = 0.537–0.760 mS per column), not ≈ 37.
+- **Open issue: OPA196 transient.**
+  - The full 30-amplifier transient did not progress usefully in ngspice: a 2 µs slice was still unfinished after 28 min, and the full run was stopped after 3.4 h at 1.9 GB.
+  - `s07_transient_energy.py opa196` therefore simulates the 10 neurons as separate exact sub-circuits (the shared inputs and supplies are ideal sources) and sums their source currents.
+  - Neurons 1–9 finish in 1–14 min. **Neuron 0 does not finish** (stopped after 17 h at 3.7 GB): probable timestep collapse at a hysteretic switch in the model.
+  - This step is excluded from `run_all.ps1`. Ideas: `.options method=gear`, raising `abstol`/`chgtol`, smoothing the PWL edges, or starting from the DC-sweep operating point.
+- **Published** as a public GitHub repository (MIT license). Commits use the GitHub noreply address.
+
 ## 9. Exact next steps (in order)
 
-1. **Run on Windows:** `run_all.ps1 -Quick`.
-   - Compare the regenerated `results\s03…s08*.json` against the copies saved here.
-   - Expected: 348/360 in s03, s04 and s08; s00 passes.
-   - Record the ngspice version from the `stamp` field.
-2. **Optional:** run `tools\setup_ngspice.ps1` to install the official ngspice-47 Windows build. `config.py` prefers it over the Qucs-S copy.
-3. **Open `circuits\qucs\neuron_stageA.sch` in `tools\qucs-s\bin\qucs-s.exe`.**
-   - Set the simulator to ngspice, press F2, and check that node S ≈ −0.439 V.
-   - Fix the op-amp orientation if needed (§8.2).
-4. **Run the demo:** `.\.venv\Scripts\python.exe demo\demo_app.py`. Try test images 0–359, ideal vs real op-amps, and 4-bit synapses.
-5. **Replace `OPA_REAL` with a vendor model** of a real low-power op-amp, then re-run s04, s06 and s07.
-   - Candidates: a micro-power CMOS rail-to-rail part. Vendor SPICE models are distributed by the manufacturers.
-   - Then add `.noise` analysis.
-6. **Power reduction study.** Raise R_min/R_max (for example 100 kΩ–10 MΩ), use micro-power amplifiers and power-gate between inferences. Re-measure E per inference with s07.
-7. **V0.3/V0.4:** add a hidden layer (64 → 16 → 10) with an analog nonlinearity (diode/ReLU stage) between crossbars. Train ex situ, then in-loop. Target: fix digit "1" and test signal restoration between layers.
-8. **Stage E improvements:** stochastic rounding for low-bit programming, write-noise and endurance models, a per-column offset calibration step. Repeat with ≥ 3 seeds per chip so the improvement has error bars.
-9. **Toward V0.6 (hardware):** pick a digital potentiometer or DAC-plus-multiplying approach for programmable synapses. Build one 8-input differential column on a breadboard, then compare measurements with `s01`-style SPICE predictions.
+Done since the first handoff: Windows run, Qucs-S schematic check, demo verification, vendor op-amp model, `.noise` analysis (old steps 1–5).
+
+1. **Fix the OPA196 transient for neuron 0** (see §8b). Then report settling time and energy per inference with the vendor model, next to the generic model's 3.55–3.72 µJ.
+2. **Repeat s06 non-idealities with the OPA196** (offset and tolerance with the vendor part; pass `vos` through the wrapper's `VOS` parameter).
+3. **Power reduction study.** Raise R_min/R_max (for example 100 kΩ–10 MΩ), use micro-power amplifiers and power-gate between inferences. Re-measure E per inference with s07.
+4. **V0.3/V0.4:** add a hidden layer (64 → 16 → 10) with an analog nonlinearity (diode/ReLU stage) between crossbars. Train ex situ, then in-loop. Target: fix digit "1" and test signal restoration between layers.
+5. **Stage E improvements:** stochastic rounding for low-bit programming, write-noise and endurance models, a per-column offset calibration step. Repeat with ≥ 3 seeds per chip so the improvement has error bars.
+6. **Toward V0.6 (hardware):** pick a digital potentiometer or DAC-plus-multiplying approach for programmable synapses. Build one 8-input differential column on a breadboard, then compare measurements with `s01`-style SPICE predictions.

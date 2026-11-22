@@ -122,7 +122,8 @@ The training rule Σ_k (p_k − 1[k=t]) = 0 keeps Σ_k w_ki = 0 when training st
 
 `OPA_REAL` does **not** model slew rate, noise, input bias current, CMRR/PSRR or temperature. These are listed as limitations.
 
-**Finite-gain error.** The TIA's noise gain is 1 + R_f·ΣG ≈ 1 + 5.6 kΩ × 6.5 mS ≈ 37. With A_OL = 10⁵, the relative error is about 37/10⁵ ≈ 0.04 %. The measured maximum error versus software is given in `results/s04_stageD_inference.json`.
+**Finite-gain error.** The TIA's noise gain is NG = 1 + R_f·ΣG, where ΣG is the total conductance of the 65 synapses on that column. The actual column sums are ΣG = 0.537 … 0.760 mS, so NG = 1 + 5.6 kΩ × (0.537 … 0.760) mS = **4.00 … 5.26**. With A_OL = 10⁵, the relative error is at most 5.26/10⁵ ≈ 0.005 %. The measured maximum error versus software is given in `results/s04_stageD_inference.json`.
+*(Corrected 2026-11-21. The earlier text used ΣG ≈ 6.5 mS = 65 × G_max, giving NG ≈ 37. That is only an upper bound: 52.7 % of the resistors sit at G_min.)*
 
 ---
 
@@ -158,3 +159,129 @@ P = V·I for every source, using ngspice's branch currents (`ns.spice.power`).
 - Ideal-op-amp runs draw **zero** supply current by construction. They say nothing about energy.
 
 Discrete-amplifier power (30 × 0.5 mA × 10 V = 150 mW) dominates. It describes a breadboard built from general-purpose parts, **not** what an integrated ASIC would consume. ASIC efficiency claims would need transistor-level design in a real process (PDK), layout parasitics and the peripheral circuits listed above.
+
+---
+
+## 9. Vendor amplifier: Texas Instruments OPA196 (`scripts/s12_opa196_stageD.py`)
+
+**Why this part.** The crossbar runs from ±5 V and the TIA outputs swing to −3.24 V (test set; slightly beyond the 3.19 V training-set maximum used to choose R_f, still 1.7 V from the rail), so the amplifier must accept a 10 V supply and swing close to its rails. The OPA196 is rated 4.5–36 V total supply with rail-to-rail output, its quiescent current is 140 µA (vs 0.5 mA assumed in `OPA_REAL`), and its GBW (2.5 MHz) is in the same range as the generic model, so results remain comparable. TI publishes an unencrypted PSpice macromodel that models noise, offset, Iq, slew rate, output swing, CMRR/PSRR.
+
+**Model provenance.** `SBOMAF9E.ZIP` (27 388 bytes, SHA-256 `9c264813…ccdf5`) from ti.com, file `OPAx196.LIB`, "Final 1.5", 29 Aug 2022. It is used **unmodified** (`tools/vendor_models/opa196_extracted/`); `circuits/models/opa196_wrapper.lib` only maps pin order (TI: IN+ IN− VCC VEE OUT → ours: inp inn out vcc vee) and adds an optional extra offset `VOS`. ngspice needs PSpice compatibility mode (`set ngbehavior=ps`), which `spice.prepare_workdir` writes to a `.spiceinit` in ngspice's working directory for vendor models only.
+
+**Bench check of the model against the datasheet** (SBOS869 table 6.7, typical; our supplies ±5 V):
+
+| Quantity | How measured in ngspice | Datasheet | Model |
+|---|---|---|---|
+| I_Q per amplifier | −i(VCC)/2 for two idle amplifiers: 280.00 µA / 2 | 140 µA | **140.00 µA** |
+| A_OL (DC) | L/C DC servo (L = 1 GH, C = 1 GF), vdb(out) at 0.1 Hz | 140 dB (±18 V, 10 kΩ) | **141.6 dB** |
+| GBW | 10^(A_OL(1 kHz)/20) × 1 kHz = 10^(69.17/20) × 1 kHz | 2.5 MHz | **2.87 MHz** |
+| e_n at 100 Hz / 1 kHz | `.noise` of a unity buffer, input-referred | 18 / 15 nV/√Hz | **20.3 / 18.1 nV/√Hz** |
+| V_OS | output of a grounded-input buffer | ±25 µV typ, ±100 µV max | **16.8 µV** |
+
+The model is ~15 % faster and ~20 % noisier than the datasheet *typical* values; we keep the vendor model as delivered, so the noise results below are slightly pessimistic.
+
+**Results (all 1437 train + 360 test images, same programming as Stage D, R_f = 5.6 kΩ):**
+
+| | OPA_REAL (generic) | OPA196 (TI model) |
+|---|---|---|
+| Test / train correct | 348/360 / 1410/1437 | **348/360 / 1410/1437** |
+| Disagreements with software / with OPA_REAL | 0 / – | **0 / 0** |
+| max \|S − S_Kirchhoff\| | – | 42.3 µV (mean +33.2 µV) |
+| TIA output range (360 test images) | −3.244 … −0.185 V | −3.244 … −0.185 V |
+| Mean total power | 183.0 mW | **75.0 mW** |
+
+*Where the 33 µV offset comes from:* each TIA amplifies its input offset by its noise gain, and the difference amplifier by 2. For test image 0 the measured TIA errors were 0.07–0.09 mV ≈ 16.9 µV × (1 + R_f G_Σ) with 1 + R_f G_Σ ≈ 4–5, and the difference amplifier added 2 × 16.7 µV = 33 µV; the TIA errors largely cancel in tn − tp because both columns see similar offsets. In logits: 42 µV / 0.2374 V = 1.8·10⁻⁴.
+
+*Power hand check:* P ≈ 30·I_Q·(V_CC − V_EE) + |V_EE|·ΣI_col + P_inputs + P_bias = 30 × 140 µA × 10 V + 5 V × 5.504 mA + 4.05 mW + 0.28 mW = 42.0 + 27.5 + 4.3 = **73.9 mW** (SPICE: 75.0 mW). The TIA outputs are negative, so every TIA sinks its column current through its output stage into the −5 V rail; that is why P_VEE (49.3 mW) > P_VCC (21.4 mW).
+
+**Numerical method note (important for reproducing):** with this model a fresh `.op` per image needs dynamic gmin stepping (≈11–16 s per image) and, for 1 of 20 images tested, converged to a *different valid DC state* (S off by 3.9 mV). The model contains voltage-controlled switches with hysteresis (overload switch VON 0.9 V / VOFF 0.8 V; clamp switches 10 mV / 0 V), so the DC solution can depend on history. We therefore solve vendor-model batches as an image-index DC sweep starting from a blank image (`spice.sweep_cards`): each solve starts from the previous image's operating point, which is also how a physical chip sees consecutive inputs. With our own models the sweep and the per-image `.op` agree to 5·10⁻⁸ V; with the OPA196 all images then sit at 0.041–0.042 mV from Kirchhoff, and the speed is ~1 s per image.
+
+---
+
+## 10. Electrical noise with the OPA196 (`scripts/s13_noise.py`)
+
+**This is ELECTRICAL simulation:** ngspice `.noise` small-signal analysis around the DC operating point of test image 0, 0.1 Hz – 100 MHz, 20 points/decade, one run per output S_k. Noise sources: the vendor model's own voltage and current noise (including 1/f), and the thermal noise of every resistor at T = 300.15 K (ngspice's default 27 °C). The input DACs are ideal and noiseless (see the s06 input-noise study for that). Three variants separate the contributions:
+
+- **A**: everything noisy.
+- **B**: the 1300 synapse resistors noiseless (`noisy=0`).
+- **C**: R_f and the difference-amplifier resistors also noiseless, leaving the op-amps only.
+
+### 10.1 Noise density: hand calculation vs ngspice at 1 kHz (white region)
+
+Constants: 4kT = 4 × 1.380649·10⁻²³ J/K × 300.15 K = **1.6576·10⁻²⁰ J**. Model e_n(1 kHz) = 18.07 nV/√Hz (bench, §9). Datasheet i_n = 1.5 fA/√Hz, so i_n·R_f = 1.5 fA × 5.6 kΩ = 8.4 pV/√Hz, which is negligible.
+
+Worked example, output S_0, positive column. ΣG⁺ = 0.5365 mS, so NG = 1 + R_f·ΣG = 1 + 5600 × 0.5365·10⁻³ = 4.004.
+
+| Source (referred to the TIA output) | Formula | Value |
+|---|---|---|
+| R_f thermal | √(4kT·R_f) = √(1.6576·10⁻²⁰ × 5600) | 9.63 nV/√Hz |
+| 65 synapse resistors | R_f·√(4kT·ΣG) = 5600 × √(1.6576·10⁻²⁰ × 0.5365·10⁻³) | 16.70 nV/√Hz |
+| op-amp e_n × noise gain | e_n·NG = 18.07 × 4.004 | 72.36 nV/√Hz |
+| TIA total | √(9.63² + 16.70² + 72.36²) | 74.9 nV/√Hz |
+
+The negative column (ΣG⁻ = 0.5610 mS, NG = 4.142) gives √(9.63² + 17.08² + 74.84²) = 77.4 nV/√Hz.
+
+The difference amplifier's own noise:
+
+- Its four 100 kΩ resistors give 4kT·R_d (RD1) + 4kT·R_d (RD2) + 4kT·(R_d/2)·2² (RD3‖RD4) = 16kT·R_d.
+- Its own e_n appears with noise gain 2.
+- So e_d = √(16kT·R_d + 4e_n²) = √(6.630·10⁻¹⁵ + 4 × (18.07 nV)²) = **89.09 nV/√Hz**.
+
+The output is e_S = √(e_tp² + e_tn² + e_d²) = √(74.9² + 77.4² + 89.09²) = **139.8 nV/√Hz**. ngspice gives **139.8 nV/√Hz**. For all 10 outputs (139.8 … 158.6 nV/√Hz) the hand formula and ngspice agree within **0.01 %**, which validates the noise-gain picture.
+
+### 10.2 Spectrum and why "the" rms noise depends on readout bandwidth
+
+ngspice noise density of S_0 (`results/s13_noise.json`, `plots/fig11_noise.png`):
+
+| f | 0.1 Hz | 1 Hz | 10 Hz | 100 Hz | 1 kHz | 10 kHz | 100 kHz | 708 kHz (peak) | 10 MHz | 100 MHz |
+|---|---|---|---|---|---|---|---|---|---|---|
+| e_S (nV/√Hz) | 1873 | 607 | 233 | 151 | 140 | 139 | 142 | 570 | 84 | 77 |
+
+- **Below ~100 Hz:** 1/f noise of the vendor model. It contributes only 2.1 µV rms from 0.1 to 100 Hz.
+- **100 Hz – 200 kHz:** flat. Check: σ = e_S·√B = 139.8 nV/√Hz × √(10⁴ Hz) = 14.0 µV. ngspice, integrated 0.1 Hz – 10 kHz, also gives **14.0 µV**.
+- **Peak near 0.7 MHz:** closed-loop noise peaking of the amplifiers (the model's higher-order poles). 98 % of the 0.1 Hz – 1 MHz noise power lies between 100 kHz and 1 MHz.
+- **Above ~3 MHz:** a flat ~80 nV/√Hz plateau that comes from the vendor model alone (variant C = A there). A real readout has finite bandwidth, so rms noise must be quoted **per readout bandwidth**. ngspice's own `onoise_total` vector was unusable here (wrdata returned 1.4·10⁹ for every run), so the rms values are integrals of the density, σ² = ∫ e_S²·|H(f)|² df:
+
+| Readout bandwidth | σ(S_k), 10 outputs | worst-image margin / σ_diff | P_err (union bound), worst image |
+|---|---|---|---|
+| brick-wall 0.1 Hz – 10 kHz | 14.0 – 15.9 µV | 210.6 | < 10⁻³⁰⁰ |
+| brick-wall 0.1 Hz – 100 kHz | 44.2 – 50.0 µV | 66.9 | < 10⁻³⁰⁰ |
+| 1st-order filter f_c = 100 kHz | 72.1 – 78.0 µV | 42.3 | < 10⁻³⁰⁰ |
+| **1st-order filter f_c = 1 MHz** (primary) | **291 – 302 µV** | **10.8** | **1.8·10⁻²⁷** |
+| brick-wall 0.1 Hz – 1 MHz | 325 – 337 µV | 9.67 | 2.1·10⁻²² |
+| brick-wall 0.1 Hz – 10 MHz | 429 – 438 µV | 7.41 | 6.3·10⁻¹⁴ |
+| brick-wall 0.1 Hz – 100 MHz (worst case) | 861 – 866 µV | 3.73 | 9.5·10⁻⁵ |
+
+The primary choice is a 1st-order readout filter at f_c = 1 MHz. Its time constant is τ = 1/(2π·1 MHz) = 0.16 µs, so it settles in 5τ = 0.8 µs, well inside the 20 µs image period. In logits, 291–302 µV / 0.23741 V = **1.2·10⁻³–1.3·10⁻³ logit units**.
+
+*Single-pole hand estimate for comparison:* σ² ≈ (e_tp² + e_tn²)·(π/2)·GBW/NG + e_d²·(π/2)·GBW/2, with GBW = 2.87 MHz. For S_0 this gives 175 µV. ngspice integrated to 1 MHz gives 325 µV. The hand formula misses the peaking near 0.7 MHz, which is why the SPICE spectrum is needed.
+
+**Where the noise comes from** (power shares, 1 MHz readout, mean of the 10 outputs; A − B, B − C, C):
+
+| Source | Share of σ² |
+|---|---|
+| op-amps (e_n × noise gain, peaking) | 79.8 % |
+| R_f and difference-amplifier resistors | 19.2 % |
+| 1300 synapse resistors | 1.0 % |
+
+The synapse resistors matter least because their thermal-noise current, √(4kT·ΣG) = √(1.6576·10⁻²⁰ × 0.54 mS) = 3.0 pA/√Hz, is small next to the op-amp noise multiplied by NG = 4–5.
+
+### 10.3 Classification risk from noise
+
+The 360 OPA196 test outputs come from §9. Noise on different outputs is assumed independent: they share only ideal sources. Winner w, competitor j:
+
+  z_j = (S_w − S_j) / √(σ_w² + σ_j²),  P_err ≤ Σ_j Q(z_j),  Q(x) = ½·erfc(x/√2)
+
+The smallest margin is test image 18 (true 9, predicted 9), S_9 − S_4 = 0.87580 − 0.87124 V = **4.562 mV**:
+
+- With the 1 MHz readout: z = 4.562 mV / √((295.8 µV)² + (301.8 µV)²) = 4.562 mV / 422.6 µV = **10.8**, so Q(10.8) = **1.8·10⁻²⁷**.
+- With the full 0.1 Hz – 100 MHz band (worst case): z = 4.562 mV / √(862.9² + 865.5²) µV = 4.562 mV / 1222 µV = **3.73**, so Q = **9.5·10⁻⁵**. Summed over all 360 test images, the expected number of noise-induced flips is 9.6·10⁻⁵.
+
+**Conclusion (electrical simulation).** With any readout bandwidth up to 10 MHz, amplifier and resistor noise cannot change a single test decision; P ≤ 6·10⁻¹⁴ per image. Without a band limit it would still be below 10⁻⁴. The 12 test errors (348/360) are therefore classification errors of the **software-trained** linear model, not noise. For comparison, the static non-idealities in s06 do flip decisions: uniform ±1 % resistor tolerance lowers the worst of 5 trials to 96.39 %, and 2-bit quantization lowers accuracy to 94.44 %. Static device errors, not noise, are the accuracy limit of this circuit.
+
+**Limits:**
+
+- Small-signal analysis around one operating point (test image 0). σ varies with ΣG, which is fixed by the weights, not by the image; the image only changes the operating point, and the noise is computed linearised.
+- No resistor excess (1/f) noise.
+- Ideal, noiseless input DACs and supplies.
+- Integration down to 0.1 Hz treats slow 1/f drift as noise, although it really behaves as a slowly varying offset.

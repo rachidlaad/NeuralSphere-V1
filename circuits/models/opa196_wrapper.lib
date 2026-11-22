@@ -1,0 +1,15 @@
+* NeuralSphere-V1 wrapper for the Texas Instruments OPAx196 PSpice macromodel
+* (TI file OPAx196.LIB, model version "Final 1.5", 29 AUG 2022, from SBOMAF9E.ZIP,
+*  downloaded 2026-11-21 from https://www.ti.com/lit/zip/sbomaf9,
+*  SHA-256 of the zip 9c264813a36536f743c166b6a101904b76ed08f049f2eeb127a438cc6e8ccdf5).
+* The TI library is NOT modified; it is included from tools/vendor_models/opa196_extracted/.
+* It needs ngspice PSpice compatibility mode:  set ngbehavior=ps  (in .spiceinit).
+*
+* Pin order used everywhere in this project: inp inn out vcc vee
+* TI pin order:                               IN+ IN- VCC VEE OUT
+* VOS adds an EXTRA offset on top of the model's own built-in offset (13.6 uV typ in the model),
+* so the chip-instance offset studies (s05/s06 style) can be repeated with this part.
+.subckt OPA196 inp inn out vcc vee params: VOS=0
+VOFS inp inp2 DC {VOS}
+XU inp2 inn vcc vee out OPAx196
+.ends OPA196

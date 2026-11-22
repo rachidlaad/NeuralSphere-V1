@@ -1,0 +1,75 @@
+Traceback (most recent call last):
+  File "C:\Users\intel\Documents\NeuralSphere-V1\scripts\s07_transient_energy.py", line 77, in <module>
+    parts = list(ex.map(run_neuron, range(10)))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Python312\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\intel\Documents\NeuralSphere-V1\scripts\s07_transient_energy.py", line 67, in run_neuron
+    raise RuntimeError(f"neuron {k}: " + pk.stdout[-1500:] + pk.stderr[-1500:])
+RuntimeError: neuron 0: erence value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+ Reference value :  1.19033e-04
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+
+
+real	1045m49.827s
+user	0m0.015s
+sys	0m0.015s
+tran exit 1

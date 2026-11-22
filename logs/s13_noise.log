@@ -1,0 +1,114 @@
+{
+ "sigma_uV_primary": [
+  291.28,
+  300.08,
+  299.61,
+  299.41,
+  301.76,
+  298.34,
+  294.77,
+  295.65,
+  296.74,
+  295.83
+ ],
+ "sigma_S0_uV_by_band": {
+  "brickwall 0.1 Hz-10 kHz": 14.0,
+  "brickwall 0.1 Hz-100 kHz": 44.2,
+  "brickwall 0.1 Hz-1 MHz": 325.1,
+  "brickwall 0.1 Hz-10 MHz": 428.7,
+  "brickwall 0.1 Hz-100 MHz (worst case, whole simulated band)": 860.9,
+  "1st-order readout filter f_c = 100 kHz": 72.1,
+  "1st-order readout filter f_c = 1 MHz": 291.3
+ },
+ "share": {
+  "synapse_thermal_V2": 0.010322080026603096,
+  "Rf_and_diffamp_resistors_V2": 0.19184095213061397,
+  "opamps_V2": 0.7978369678427829
+ },
+ "worked": {
+  "4kT": "4 k T = 4 * 1.380649e-23 J/K * 300.15 K = 1.6576e-20 J",
+  "R_f thermal": "sqrt(4kT R_f) = sqrt(1.6576e-20 * 5600) = 9.63 nV/rtHz",
+  "synapse thermal (k=0, + column)": "R_f sqrt(4kT G_sum) = 5600 * sqrt(1.6576e-20 * 0.5365 mS) = 16.70 nV/rtHz",
+  "op-amp e_n x noise gain (k=0, +)": "e_n (1 + R_f G_sum) = 18.07 nV * (1 + 5600 * 0.5365 mS) = 18.07 * 4.004 = 72.36 nV/rtHz",
+  "diff-amp own noise": "sqrt(16 kT R_d + 4 e_n^2) = sqrt(6.6304e-15 + 4*(18.07 nV)^2) = 89.09 nV/rtHz",
+  "e_S(1 kHz), k=0": "hand 139.8 nV/rtHz vs ngspice 139.8 nV/rtHz",
+  "sigma_S, k=0": "hand (single-pole, white noise only) 175.4 uV rms vs ngspice spectrum integrated 0.1 Hz-1 MHz 325.1 uV rms (includes 1/f region and the peaking near 1 MHz)"
+ },
+ "risk": {
+  "brickwall 0.1 Hz-10 kHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 210.60228888762168,
+   "worst_P_err_union_bound": 0.0,
+   "expected_noise_flips_over_360": 0.0,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((14.7 uV)^2 + (15.9 uV)^2) = 4.562 mV / 21.7 uV = 210.60;  Q(z) = 0"
+  },
+  "brickwall 0.1 Hz-100 kHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 66.85588253161363,
+   "worst_P_err_union_bound": 0.0,
+   "expected_noise_flips_over_360": 0.0,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((46.5 uV)^2 + (50.0 uV)^2) = 4.562 mV / 68.2 uV = 66.86;  Q(z) = 0"
+  },
+  "brickwall 0.1 Hz-1 MHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 9.666713327960366,
+   "worst_P_err_union_bound": 2.0878663546045824e-22,
+   "expected_noise_flips_over_360": 2.087866354604853e-22,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((330.4 uV)^2 + (337.1 uV)^2) = 4.562 mV / 472.0 uV = 9.67;  Q(z) = 2.09e-22"
+  },
+  "brickwall 0.1 Hz-10 MHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 7.410494123092379,
+   "worst_P_err_union_bound": 6.291484899323981e-14,
+   "expected_noise_flips_over_360": 6.291485078120908e-14,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((432.7 uV)^2 + (437.9 uV)^2) = 4.562 mV / 615.7 uV = 7.41;  Q(z) = 6.29e-14"
+  },
+  "brickwall 0.1 Hz-100 MHz (worst case, whole simulated band)": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 3.732956883639514,
+   "worst_P_err_union_bound": 9.462249967853195e-05,
+   "expected_noise_flips_over_360": 9.564973217192466e-05,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((862.9 uV)^2 + (865.5 uV)^2) = 4.562 mV / 1222.2 uV = 3.73;  Q(z) = 9.46e-05"
+  },
+  "1st-order readout filter f_c = 100 kHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 42.31050975594793,
+   "worst_P_err_union_bound": 0.0,
+   "expected_noise_flips_over_360": 0.0,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((74.5 uV)^2 + (78.0 uV)^2) = 4.562 mV / 107.8 uV = 42.31;  Q(z) = 0"
+  },
+  "1st-order readout filter f_c = 1 MHz": {
+   "worst_image": 18,
+   "winner": 9,
+   "runner_up": 4,
+   "worst_margin_V": 0.004562360970000068,
+   "worst_margin_in_sigma": 10.796503566871763,
+   "worst_P_err_union_bound": 1.7878069743325852e-27,
+   "expected_noise_flips_over_360": 1.7878069743325852e-27,
+   "formula": "z = (S_9 - S_4) / sqrt(sig_9^2 + sig_4^2) = 4.562 mV / sqrt((295.8 uV)^2 + (301.8 uV)^2) = 4.562 mV / 422.6 uV = 10.80;  Q(z) = 1.79e-27"
+  }
+ }
+}
+
+real	3m9.766s
+user	0m0.000s
+sys	0m0.000s
+noise exit 0
