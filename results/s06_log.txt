@@ -1,0 +1,107 @@
+reference ideal op-amps, continuous G 0 0.9666666666666667
+reference real op-amps, continuous G 0 0.9666666666666667
+quantization 8-bit 0 0.9666666666666667
+quantization 6-bit 0 0.9694444444444444
+quantization 5-bit 0 0.9666666666666667
+quantization 4-bit 0 0.9611111111111111
+quantization 3-bit 0 0.9555555555555556
+quantization 2-bit 0 0.9444444444444444
+device tolerance uniform 1% 0 0.9694444444444444
+device tolerance uniform 1% 1 0.9666666666666667
+device tolerance uniform 1% 2 0.9638888888888889
+device tolerance uniform 1% 3 0.9666666666666667
+device tolerance uniform 1% 4 0.9638888888888889
+device tolerance uniform 5% 0 0.9694444444444444
+device tolerance uniform 5% 1 0.9638888888888889
+device tolerance uniform 5% 2 0.9666666666666667
+device tolerance uniform 5% 3 0.9666666666666667
+device tolerance uniform 5% 4 0.9638888888888889
+device tolerance uniform 10% 0 0.9666666666666667
+device tolerance uniform 10% 1 0.9666666666666667
+device tolerance uniform 10% 2 0.9638888888888889
+device tolerance uniform 10% 3 0.9666666666666667
+device tolerance uniform 10% 4 0.9611111111111111
+device tolerance uniform 20% 0 0.9638888888888889
+device tolerance uniform 20% 1 0.9583333333333334
+device tolerance uniform 20% 2 0.9611111111111111
+device tolerance uniform 20% 3 0.9638888888888889
+device tolerance uniform 20% 4 0.9583333333333334
+device tolerance gauss 1% 0 0.9666666666666667
+device tolerance gauss 1% 1 0.9638888888888889
+device tolerance gauss 1% 2 0.9638888888888889
+device tolerance gauss 1% 3 0.9666666666666667
+device tolerance gauss 1% 4 0.9666666666666667
+device tolerance gauss 5% 0 0.9583333333333334
+device tolerance gauss 5% 1 0.9666666666666667
+device tolerance gauss 5% 2 0.9583333333333334
+device tolerance gauss 5% 3 0.9666666666666667
+device tolerance gauss 5% 4 0.9666666666666667
+device tolerance gauss 10% 0 0.9611111111111111
+device tolerance gauss 10% 1 0.9583333333333334
+device tolerance gauss 10% 2 0.9611111111111111
+device tolerance gauss 10% 3 0.9694444444444444
+device tolerance gauss 10% 4 0.9666666666666667
+device tolerance gauss 20% 0 0.9361111111111111
+device tolerance gauss 20% 1 0.9527777777777777
+device tolerance gauss 20% 2 0.9472222222222222
+device tolerance gauss 20% 3 0.9555555555555556
+device tolerance gauss 20% 4 0.9527777777777777
+combined 6-bit + gauss 5% + VOS 5 mV 0 0.9666666666666667
+combined 6-bit + gauss 5% + VOS 5 mV 1 0.9722222222222222
+combined 6-bit + gauss 5% + VOS 5 mV 2 0.9611111111111111
+combined 6-bit + gauss 5% + VOS 5 mV 3 0.9666666666666667
+combined 6-bit + gauss 5% + VOS 5 mV 4 0.9666666666666667
+input noise sigma 5 mV 0 0.9694444444444444
+input noise sigma 5 mV 1 0.9666666666666667
+input noise sigma 5 mV 2 0.9666666666666667
+input noise sigma 5 mV 3 0.9638888888888889
+input noise sigma 5 mV 4 0.9666666666666667
+input noise sigma 10 mV 0 0.9722222222222222
+input noise sigma 10 mV 1 0.9666666666666667
+input noise sigma 10 mV 2 0.9666666666666667
+input noise sigma 10 mV 3 0.9611111111111111
+input noise sigma 10 mV 4 0.9666666666666667
+input noise sigma 20 mV 0 0.9666666666666667
+input noise sigma 20 mV 1 0.9611111111111111
+input noise sigma 20 mV 2 0.9666666666666667
+input noise sigma 20 mV 3 0.9611111111111111
+input noise sigma 20 mV 4 0.9666666666666667
+input noise sigma 50 mV 0 0.9611111111111111
+input noise sigma 50 mV 1 0.9611111111111111
+input noise sigma 50 mV 2 0.9611111111111111
+input noise sigma 50 mV 3 0.9555555555555556
+input noise sigma 50 mV 4 0.9694444444444444
+input noise sigma 100 mV 0 0.95
+input noise sigma 100 mV 1 0.9555555555555556
+input noise sigma 100 mV 2 0.9583333333333334
+input noise sigma 100 mV 3 0.9472222222222222
+input noise sigma 100 mV 4 0.9527777777777777
+op-amp offset sigma 1 mV 0 0.9666666666666667
+op-amp offset sigma 1 mV 1 0.9666666666666667
+op-amp offset sigma 1 mV 2 0.9666666666666667
+op-amp offset sigma 1 mV 3 0.9638888888888889
+op-amp offset sigma 1 mV 4 0.9638888888888889
+op-amp offset sigma 5 mV 0 0.9611111111111111
+op-amp offset sigma 5 mV 1 0.9666666666666667
+op-amp offset sigma 5 mV 2 0.9666666666666667
+op-amp offset sigma 5 mV 3 0.9666666666666667
+op-amp offset sigma 5 mV 4 0.9666666666666667
+op-amp offset sigma 10 mV 0 0.9611111111111111
+op-amp offset sigma 10 mV 1 0.9666666666666667
+op-amp offset sigma 10 mV 2 0.9666666666666667
+op-amp offset sigma 10 mV 3 0.9666666666666667
+op-amp offset sigma 10 mV 4 0.9694444444444444
+op-amp offset sigma 30 mV 0 0.9277777777777778
+op-amp offset sigma 30 mV 1 0.9472222222222222
+op-amp offset sigma 30 mV 2 0.9305555555555556
+op-amp offset sigma 30 mV 3 0.9583333333333334
+op-amp offset sigma 30 mV 4 0.95
+saturation Rf x2 = 11200 ohm 0 0.9666666666666667
+saturation Rf x4 = 22400 ohm 0 0.7861111111111111
+saturation Rf x8 = 44800 ohm 0 0.3277777777777778
+supply +4.5/-4.5 V 0 0.9666666666666667
+supply +4.0/-4.0 V 0 0.9666666666666667
+supply +3.3/-3.3 V 0 0.9666666666666667
+supply +2.5/-2.5 V 0 0.9611111111111111
+supply +5.5/-5.5 V 0 0.9666666666666667
+supply +5.0/-4.0 V 0 0.9666666666666667

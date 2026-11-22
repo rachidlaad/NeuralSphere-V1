@@ -1,0 +1,329 @@
+{
+ "stamp": {
+  "time": "2026-11-21 16:30:53",
+  "host": "vm",
+  "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
+  "python": "3.13.18",
+  "ngspice": "/home/claude/ngspice/bin/ngspice",
+  "ngspice_version": "** ngspice-47 : Circuit level simulation program"
+ },
+ "Rf": 5600.0,
+ "reference_accuracy_real": 0.9666666666666667,
+ "table": [
+  {
+   "group": "reference",
+   "condition": "ideal op-amps, continuous G",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "reference",
+   "condition": "real op-amps, continuous G",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "quantization",
+   "condition": "8-bit",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "quantization",
+   "condition": "6-bit",
+   "trials": 1,
+   "mean_acc": 0.9694444444444444,
+   "std_acc": 0.0,
+   "min_acc": 0.9694444444444444,
+   "degradation_pct_points": -0.2777777777777768
+  },
+  {
+   "group": "quantization",
+   "condition": "5-bit",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "quantization",
+   "condition": "4-bit",
+   "trials": 1,
+   "mean_acc": 0.9611111111111111,
+   "std_acc": 0.0,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 0.5555555555555536
+  },
+  {
+   "group": "quantization",
+   "condition": "3-bit",
+   "trials": 1,
+   "mean_acc": 0.9555555555555556,
+   "std_acc": 0.0,
+   "min_acc": 0.9555555555555556,
+   "degradation_pct_points": 1.1111111111111072
+  },
+  {
+   "group": "quantization",
+   "condition": "2-bit",
+   "trials": 1,
+   "mean_acc": 0.9444444444444444,
+   "std_acc": 0.0,
+   "min_acc": 0.9444444444444444,
+   "degradation_pct_points": 2.2222222222222254
+  },
+  {
+   "group": "device tolerance",
+   "condition": "uniform 1%",
+   "trials": 5,
+   "mean_acc": 0.9661111111111111,
+   "std_acc": 0.002078698548207738,
+   "min_acc": 0.9638888888888889,
+   "degradation_pct_points": 0.05555555555555314
+  },
+  {
+   "group": "device tolerance",
+   "condition": "uniform 5%",
+   "trials": 5,
+   "mean_acc": 0.9661111111111111,
+   "std_acc": 0.002078698548207738,
+   "min_acc": 0.9638888888888889,
+   "degradation_pct_points": 0.05555555555555314
+  },
+  {
+   "group": "device tolerance",
+   "condition": "uniform 10%",
+   "trials": 5,
+   "mean_acc": 0.9650000000000001,
+   "std_acc": 0.0022222222222222144,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 0.1666666666666594
+  },
+  {
+   "group": "device tolerance",
+   "condition": "uniform 20%",
+   "trials": 5,
+   "mean_acc": 0.961111111111111,
+   "std_acc": 0.0024845199749997573,
+   "min_acc": 0.9583333333333334,
+   "degradation_pct_points": 0.5555555555555647
+  },
+  {
+   "group": "device tolerance",
+   "condition": "gauss 1%",
+   "trials": 5,
+   "mean_acc": 0.9655555555555555,
+   "std_acc": 0.0013608276348795385,
+   "min_acc": 0.9638888888888889,
+   "degradation_pct_points": 0.11111111111111738
+  },
+  {
+   "group": "device tolerance",
+   "condition": "gauss 5%",
+   "trials": 5,
+   "mean_acc": 0.9633333333333333,
+   "std_acc": 0.004082482904638616,
+   "min_acc": 0.9583333333333334,
+   "degradation_pct_points": 0.33333333333334103
+  },
+  {
+   "group": "device tolerance",
+   "condition": "gauss 10%",
+   "trials": 5,
+   "mean_acc": 0.9633333333333333,
+   "std_acc": 0.004082482904638615,
+   "min_acc": 0.9583333333333334,
+   "degradation_pct_points": 0.33333333333334103
+  },
+  {
+   "group": "device tolerance",
+   "condition": "gauss 20%",
+   "trials": 5,
+   "mean_acc": 0.9488888888888889,
+   "std_acc": 0.0069388866648871055,
+   "min_acc": 0.9361111111111111,
+   "degradation_pct_points": 1.7777777777777781
+  },
+  {
+   "group": "combined",
+   "condition": "6-bit + gauss 5% + VOS 5 mV",
+   "trials": 5,
+   "mean_acc": 0.9666666666666666,
+   "std_acc": 0.0035136418446315197,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 1.1102230246251565e-14
+  },
+  {
+   "group": "input noise",
+   "condition": "sigma 5 mV",
+   "trials": 5,
+   "mean_acc": 0.9666666666666666,
+   "std_acc": 0.0017568209223157599,
+   "min_acc": 0.9638888888888889,
+   "degradation_pct_points": 1.1102230246251565e-14
+  },
+  {
+   "group": "input noise",
+   "condition": "sigma 10 mV",
+   "trials": 5,
+   "mean_acc": 0.9666666666666666,
+   "std_acc": 0.0035136418446315197,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 1.1102230246251565e-14
+  },
+  {
+   "group": "input noise",
+   "condition": "sigma 20 mV",
+   "trials": 5,
+   "mean_acc": 0.9644444444444444,
+   "std_acc": 0.002721655269759077,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 0.22222222222222365
+  },
+  {
+   "group": "input noise",
+   "condition": "sigma 50 mV",
+   "trials": 5,
+   "mean_acc": 0.9616666666666667,
+   "std_acc": 0.004444444444444429,
+   "min_acc": 0.9555555555555556,
+   "degradation_pct_points": 0.5000000000000004
+  },
+  {
+   "group": "input noise",
+   "condition": "sigma 100 mV",
+   "trials": 5,
+   "mean_acc": 0.9527777777777777,
+   "std_acc": 0.003928371006591964,
+   "min_acc": 0.9472222222222222,
+   "degradation_pct_points": 1.388888888888895
+  },
+  {
+   "group": "op-amp offset",
+   "condition": "sigma 1 mV",
+   "trials": 5,
+   "mean_acc": 0.9655555555555555,
+   "std_acc": 0.0013608276348795385,
+   "min_acc": 0.9638888888888889,
+   "degradation_pct_points": 0.11111111111111738
+  },
+  {
+   "group": "op-amp offset",
+   "condition": "sigma 5 mV",
+   "trials": 5,
+   "mean_acc": 0.9655555555555555,
+   "std_acc": 0.0022222222222222144,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 0.11111111111111738
+  },
+  {
+   "group": "op-amp offset",
+   "condition": "sigma 10 mV",
+   "trials": 5,
+   "mean_acc": 0.9661111111111111,
+   "std_acc": 0.002721655269759077,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 0.05555555555555314
+  },
+  {
+   "group": "op-amp offset",
+   "condition": "sigma 30 mV",
+   "trials": 5,
+   "mean_acc": 0.9427777777777777,
+   "std_acc": 0.011732617823301586,
+   "min_acc": 0.9277777777777778,
+   "degradation_pct_points": 2.388888888888896
+  },
+  {
+   "group": "saturation",
+   "condition": "Rf x2 = 11200 ohm",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "saturation",
+   "condition": "Rf x4 = 22400 ohm",
+   "trials": 1,
+   "mean_acc": 0.7861111111111111,
+   "std_acc": 0.0,
+   "min_acc": 0.7861111111111111,
+   "degradation_pct_points": 18.055555555555557
+  },
+  {
+   "group": "saturation",
+   "condition": "Rf x8 = 44800 ohm",
+   "trials": 1,
+   "mean_acc": 0.3277777777777778,
+   "std_acc": 0.0,
+   "min_acc": 0.3277777777777778,
+   "degradation_pct_points": 63.888888888888886
+  },
+  {
+   "group": "supply",
+   "condition": "+4.5/-4.5 V",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "supply",
+   "condition": "+4.0/-4.0 V",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "supply",
+   "condition": "+3.3/-3.3 V",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "supply",
+   "condition": "+2.5/-2.5 V",
+   "trials": 1,
+   "mean_acc": 0.9611111111111111,
+   "std_acc": 0.0,
+   "min_acc": 0.9611111111111111,
+   "degradation_pct_points": 0.5555555555555536
+  },
+  {
+   "group": "supply",
+   "condition": "+5.5/-5.5 V",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  },
+  {
+   "group": "supply",
+   "condition": "+5.0/-4.0 V",
+   "trials": 1,
+   "mean_acc": 0.9666666666666667,
+   "std_acc": 0.0,
+   "min_acc": 0.9666666666666667,
+   "degradation_pct_points": 0.0
+  }
+ ]
+}

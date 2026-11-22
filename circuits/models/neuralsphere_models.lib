@@ -1,0 +1,57 @@
+* NeuralSphere-V1 amplifier / comparator / diode models
+* Pin order for every amplifier: inp inn out vcc vee
+*
+* ---------------------------------------------------------------------------
+* OPA_IDEAL : linear voltage-controlled voltage source, open-loop gain 1e6.
+* No rails, no offset, no bandwidth limit. For mathematical verification ONLY.
+* (Supply pins are present so the same netlist topology is used, but they are
+* not connected internally -> an ideal amplifier draws no supply current.)
+* ---------------------------------------------------------------------------
+.subckt OPA_IDEAL inp inn out vcc vee
+E1 out 0 inp inn 1e6
+.ends OPA_IDEAL
+
+* ---------------------------------------------------------------------------
+* OPA_REAL : generic single-pole macromodel of a CMOS precision op-amp
+*   AOL  open-loop DC gain (V/V)              default 1e5  (100 dB)
+*   GBW  gain-bandwidth product (Hz)           default 1e6
+*   VOS  input offset voltage (V)              default 0
+*   HR   output headroom to each rail (V)      default 0.2  (output saturates smoothly
+*                                              toward v(vcc)-HR and v(vee)+HR)
+*   IQ   quiescent supply current (A)          default 0.5m
+*   ROUT open-loop output resistance (ohm)     default 50
+* Supply current = IQ (vcc->vee) + output load current drawn from the rail that
+* sources it (class-B output stage approximation). Not modelled: slew rate,
+* noise, input bias current, CMRR/PSRR, temperature.
+* ---------------------------------------------------------------------------
+.subckt OPA_REAL inp inn out vcc vee params: AOL=1e5 GBW=1e6 VOS=0 HR=0.2 IQ=0.5m ROUT=50
+VOFS inp inp2 DC {VOS}
+RIN inp2 inn 1e12
+G1 0 n1 inp2 inn {AOL*1e-3}
+R1 n1 0 1k
+C1 n1 0 {AOL/(2*3.141592653589793*GBW*1e3)}
+* smooth (tanh) output saturation centred between the rails, limit = rail - HR
+B2 n2 0 V = 0.5*(v(vcc)+v(vee)) + (0.5*(v(vcc)-v(vee))-HR)*tanh((v(n1)-0.5*(v(vcc)+v(vee)))/(0.5*(v(vcc)-v(vee))-HR))
+E3 n3 0 n2 0 1
+RO n3 nout {ROUT}
+VSNS nout out DC 0
+IQS vcc vee DC {IQ}
+BSRC vcc 0 I = i(VSNS)*0.5*(1+tanh(1e7*i(VSNS)))
+BSNK 0 vee I = -i(VSNS)*0.5*(1-tanh(1e7*i(VSNS)))
+.ends OPA_REAL
+
+* ---------------------------------------------------------------------------
+* COMP2 : comparator with complementary logic outputs (outp = inp>inn, outn = inverse)
+* High-gain smooth transfer (tanh, ~2 mV transition width), outputs swing 0..v(vcc),
+* 100 ohm output resistance, 0.2 mA quiescent current.
+* ---------------------------------------------------------------------------
+.subckt COMP2 inp inn outp outn vcc vee
+BP np 0 V = v(vcc)*0.5*(1+tanh(1000*(v(inp)-v(inn))))
+BN nn 0 V = v(vcc)*0.5*(1-tanh(1000*(v(inp)-v(inn))))
+ROP np outp 100
+RON nn outn 100
+IQC vcc vee DC 0.2m
+.ends COMP2
+
+* small-signal silicon switching diode (1N4148-like parameters)
+.model DSW D(IS=2.52n RS=0.568 N=1.752 CJO=4p M=0.4 TT=20n BV=100)

@@ -1,0 +1,17 @@
+chipC_2bit_gauss20pct_vos20mV 0 0.2262 0.9506
+chipC_2bit_gauss20pct_vos20mV 1 0.2128 0.9562
+chipC_2bit_gauss20pct_vos20mV 2 0.2179 0.9527
+chipC_2bit_gauss20pct_vos20mV 3 0.2045 0.961
+chipC_2bit_gauss20pct_vos20mV 4 0.2029 0.9534
+chipC_2bit_gauss20pct_vos20mV 5 0.2014 0.9652
+chipC_2bit_gauss20pct_vos20mV 6 0.1939 0.9659
+chipC_2bit_gauss20pct_vos20mV 7 0.1937 0.9582
+chipC_2bit_gauss20pct_vos20mV 8 0.1825 0.9729
+chipC_2bit_gauss20pct_vos20mV 9 0.1735 0.9687
+chipC_2bit_gauss20pct_vos20mV 10 0.1723 0.9763
+chipC_2bit_gauss20pct_vos20mV 11 0.1716 0.9673
+chipC_2bit_gauss20pct_vos20mV 12 0.1769 0.9784
+chipC_2bit_gauss20pct_vos20mV 13 0.168 0.9729
+chipC_2bit_gauss20pct_vos20mV 14 0.1723 0.968
+chipC_2bit_gauss20pct_vos20mV 15 0.168 0.9743
+chipC_2bit_gauss20pct_vos20mV_lr0.5 TEST before 342 after 346 at best-train-loss iter 15 346

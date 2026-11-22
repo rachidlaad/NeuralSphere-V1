@@ -1,0 +1,17 @@
+{
+ "stamp": {
+  "time": "2026-11-21 15:32:55",
+  "host": "vm",
+  "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39",
+  "python": "3.13.18",
+  "ngspice": "/home/claude/ngspice/bin/ngspice",
+  "ngspice_version": "** ngspice-47 : Circuit level simulation program"
+ },
+ "v_mid_spice": 1.598639,
+ "v_mid_hand": 1.598639455782313,
+ "i_source_spice": -0.000340136,
+ "i_hand": 0.0003401360544217687,
+ "abs_err_V": 4.5578231300247296e-07,
+ "note": "ngspice reports i(V1) flowing into the + terminal, hence the negative sign",
+ "passed": true
+}

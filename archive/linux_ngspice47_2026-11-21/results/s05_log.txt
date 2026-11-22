@@ -1,0 +1,24 @@
+chipA_6bit_gauss5pct_vos5mV 0 0.1413 0.9826
+chipA_6bit_gauss5pct_vos5mV 1 0.1385 0.9833
+chipA_6bit_gauss5pct_vos5mV 2 0.1379 0.984
+chipA_6bit_gauss5pct_vos5mV 3 0.1379 0.984
+chipA_6bit_gauss5pct_vos5mV 4 0.1378 0.984
+chipA_6bit_gauss5pct_vos5mV 5 0.1378 0.984
+chipA_6bit_gauss5pct_vos5mV 6 0.1377 0.984
+chipA_6bit_gauss5pct_vos5mV 7 0.1376 0.984
+chipA_6bit_gauss5pct_vos5mV 8 0.1375 0.9833
+chipA_6bit_gauss5pct_vos5mV 9 0.1376 0.984
+chipA_6bit_gauss5pct_vos5mV 10 0.1374 0.9833
+chipA_6bit_gauss5pct_vos5mV TEST before 347 after 347
+chipB_4bit_gauss10pct_vos10mV 0 0.1583 0.9756
+chipB_4bit_gauss10pct_vos10mV 1 0.1421 0.9812
+chipB_4bit_gauss10pct_vos10mV 2 0.1413 0.9791
+chipB_4bit_gauss10pct_vos10mV 3 0.141 0.9819
+chipB_4bit_gauss10pct_vos10mV 4 0.1409 0.9798
+chipB_4bit_gauss10pct_vos10mV 5 0.1406 0.9826
+chipB_4bit_gauss10pct_vos10mV 6 0.1403 0.9812
+chipB_4bit_gauss10pct_vos10mV 7 0.1392 0.9805
+chipB_4bit_gauss10pct_vos10mV 8 0.1385 0.9805
+chipB_4bit_gauss10pct_vos10mV 9 0.139 0.9805
+chipB_4bit_gauss10pct_vos10mV 10 0.1399 0.9812
+chipB_4bit_gauss10pct_vos10mV TEST before 348 after 346

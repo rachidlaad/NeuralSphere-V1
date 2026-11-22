@@ -1,0 +1,35 @@
+* netlist extracted from neuron_stageA.sch geometry
+* OpAmp = Qucs ideal op-amp (gain 1e6, output limited to +/-5 V)
+.subckt QOPAMP inp inn out
+B1 out 0 V = 5*tanh(1e6*(v(inp)-v(inn))/5)
+.ends
+VIN0 in0 0 DC 1.0
+RP0 in0 cp 19802
+RN0 in0 cn 1000000
+VIN1 in1 0 DC 0.5
+RP1 in1 cp 1000000
+RN1 in1 cn 38835
+VIN2 in2 0 DC 0.25
+RP2 in2 cp 74766.4
+RN2 in2 cn 1000000
+VIN3 in3 0 DC 1.0
+RP3 in3 cp 1000000
+RN3 in3 cn 10000
+VBIAS bias 0 DC 1.0
+RP4 bias cp 63091.5
+RN4 bias cn 1000000
+XOPP 0 cp tp QOPAMP
+RFP cp tp 10000
+XOPN 0 cn tn QOPAMP
+RFN cn tn 10000
+XOPD n11 n12 S QOPAMP
+RD3 tn n11 100000
+RD4 0 n11 100000
+RD1 tp n12 100000
+RD2 n12 S 100000
+.control
+op
+print v(S) v(tp) v(tn) v(cp) v(cn)
+quit
+.endc
+.end

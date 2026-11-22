@@ -1,0 +1,45 @@
+* NeuralSphere-V1 differential resistive crossbar: 4 inputs + bias -> 1 outputs
+* amplifier model: OPA_REAL
+.include "/home/claude/NS/circuits/models/neuralsphere_models.lib"
+* ---- supplies and reference rail
+VCC vcc 0 DC 5
+VEE vee 0 DC -5
+VB bias 0 DC 1
+* ---- input voltage sources (one per pixel), values set per image by alter
+VIN0 in0 0 DC 0
+VIN1 in1 0 DC 0
+VIN2 in2 0 DC 0
+VIN3 in3 0 DC 0
+* ---- synapses: one resistor per conductance, R = 1/G
+RP0_0 in0 cp0 19801.9802
+RN0_0 in0 cn0 1000000
+RP0_1 in1 cp0 1000000
+RN0_1 in1 cn0 38834.9515
+RP0_2 in2 cp0 74766.3551
+RN0_2 in2 cn0 1000000
+RP0_3 in3 cp0 1000000
+RN0_3 in3 cn0 10000
+RP0_4 bias cp0 63091.4826
+RN0_4 bias cn0 1000000
+* ---- neurons: two transimpedance amplifiers + one difference amplifier
+XTP0 0 cp0 tp0 vcc vee OPA_REAL params: VOS=0 
+RFP0 cp0 tp0 10000
+XTN0 0 cn0 tn0 vcc vee OPA_REAL params: VOS=0 
+RFN0 cn0 tn0 10000
+RD1_0 tp0 dm0 100000
+RD2_0 dm0 s0 100000
+RD3_0 tn0 dp0 100000
+RD4_0 dp0 0 100000
+XD0 dp0 dm0 s0 vcc vee OPA_REAL params: VOS=0 
+.control
+op
+alter VIN0 dc = 1
+alter VIN1 dc = 0.5
+alter VIN2 dc = 0.25
+alter VIN3 dc = 1
+op
+print v(s0) v(tp0) v(tn0) v(cp0) v(cn0) i(VCC) i(VEE)
+print i(VIN0) i(VIN1) i(VIN2) i(VIN3) i(VB)
+quit
+.endc
+.end

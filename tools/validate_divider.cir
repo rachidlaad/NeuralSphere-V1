@@ -1,0 +1,10 @@
+* validation: 5 V source, 10k over 4.7k divider
+V1 in 0 DC 5
+R1 in mid 10k
+R2 mid 0 4.7k
+.op
+.control
+op
+print v(mid) i(V1)
+.endc
+.end

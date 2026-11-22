@@ -1,0 +1,13 @@
+# Python environment and caches
+.venv/
+__pycache__/
+*.pyc
+# Large third-party tools and transfer archives (kept on disk, not versioned)
+tools/qucs-s/
+tools/chunks/
+tools/split/
+tools/*.zip
+tools/*.tar.gz
+tools/ngspice/
+# Scratch output of the interactive demo
+demo/last_run/

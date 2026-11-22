@@ -1,0 +1,17 @@
+﻿
+16:20:05 root=C:\Users\intel\Documents\NeuralSphere-V1
+16:20:05 downloading ngspice-47_64.7z
+16:20:06 ngspice 7z size: 0
+16:20:06 System.Management.Automation.RemoteException
+16:20:06 System ERROR:
+16:20:06 The system cannot find the file specified.
+16:20:06 ngspice_con: 
+16:20:07 downloading Qucs-S portable
+16:20:57 qucs zip size: 53663944
+16:21:45 qucs-s.exe: C:\Users\intel\Documents\NeuralSphere-V1\tools\qucs-s\bin\qucs-s.exe
+16:22:22 Successfully installed pip-26.3
+16:25:50 
+16:25:50 Successfully installed cloudpickle-3.1.3 contourpy-1.4.0 cycler-0.12.1 fonttools-4.68.0 joblib-1.6.0 kiwisolver-1.5.1 matplotlib-3.11.2 narwhals-2.29.0 numpy-2.5.5 packaging-26.3 pandas-3.1.1 pillow-13.0.0 pyparsing-3.3.3 python-dateutil-4.0.0 scikit-learn-1.9.1 scipy-1.18.1 threadpoolctl-3.8.0 tzdata-2026.6
+16:26:08 versions 2.5.5 1.18.1 3.11.2 3.1.1 1.9.1
+16:26:08 Everything is Ok
+16:26:08 SETUP DONE

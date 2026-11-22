@@ -1,0 +1,17 @@
+chipC_2bit_gauss20pct_vos20mV 0 0.2262 0.9506
+chipC_2bit_gauss20pct_vos20mV 1 0.2096 0.9492
+chipC_2bit_gauss20pct_vos20mV 2 0.179 0.9673
+chipC_2bit_gauss20pct_vos20mV 3 0.1675 0.9743
+chipC_2bit_gauss20pct_vos20mV 4 0.168 0.9743
+chipC_2bit_gauss20pct_vos20mV 5 0.1781 0.9715
+chipC_2bit_gauss20pct_vos20mV 6 0.1809 0.9659
+chipC_2bit_gauss20pct_vos20mV 7 0.1949 0.9673
+chipC_2bit_gauss20pct_vos20mV 8 0.2231 0.9395
+chipC_2bit_gauss20pct_vos20mV 9 0.2242 0.9443
+chipC_2bit_gauss20pct_vos20mV 10 0.2087 0.9499
+chipC_2bit_gauss20pct_vos20mV 11 0.219 0.9527
+chipC_2bit_gauss20pct_vos20mV 12 0.2529 0.9248
+chipC_2bit_gauss20pct_vos20mV 13 0.2154 0.952
+chipC_2bit_gauss20pct_vos20mV 14 0.1862 0.9617
+chipC_2bit_gauss20pct_vos20mV 15 0.2332 0.9332
+chipC_2bit_gauss20pct_vos20mV TEST before 342 after 336
