@@ -1,0 +1,6 @@
+# Store text files with LF line endings in the repository
+* text=auto
+*.npz binary
+*.png binary
+# Reference archive: byte-exact (its MANIFEST.sha256 must verify after checkout)
+archive/** -text
